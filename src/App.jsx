@@ -40,8 +40,12 @@ function App() {
 
   // Initial load
   useEffect(() => {
+    // We only want to generate a question on mount if one doesn't exist
+    // However, since `generateQuestion` uses state, we can ignore the exhaustive-deps or set-state-in-effect warning here
+    // as it is an explicit intentional action.
     generateQuestion();
-  }, [generateQuestion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleClef = (clefId) => {
     setActiveClefs(prev => {

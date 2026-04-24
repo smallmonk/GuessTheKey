@@ -49,7 +49,11 @@ export const CLEFS = [
 ];
 
 export function getRandomItems(array, n, currentItem) {
-  const filtered = array.filter(item => item.name !== currentItem.name);
+  // Exclude keys with the same key signature (same number of accidentals and type)
+  // This guarantees we don't accidentally offer the relative major/minor as an incorrect option.
+  const filtered = array.filter(item =>
+    !(item.accidentals === currentItem.accidentals && item.type === currentItem.type)
+  );
   const shuffled = [...filtered].sort(() => 0.5 - Math.random());
   const selected = shuffled.slice(0, n);
   const result = [...selected, currentItem].sort(() => 0.5 - Math.random());

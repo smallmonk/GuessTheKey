@@ -7,8 +7,7 @@ export default function GameControls({
   activeClefs, 
   toggleClef, 
   mode, 
-  setMode,
-  streak
+  setMode
 }) {
   return (
     <div className="game-controls">
