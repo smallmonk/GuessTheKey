@@ -1,4 +1,19 @@
-import React from 'react';
+import { KeySignature } from '../utils/keys';
+
+interface Clef {
+  id: string;
+  label: string;
+}
+
+interface GameControlsProps {
+  options: KeySignature[];
+  onSelect: (option: KeySignature) => void;
+  clefs: Clef[];
+  activeClefs: string[];
+  toggleClef: (clefId: string) => void;
+  mode: 'major' | 'minor' | 'both';
+  setMode: (mode: 'major' | 'minor' | 'both') => void;
+}
 
 export default function GameControls({ 
   options, 
@@ -8,7 +23,7 @@ export default function GameControls({
   toggleClef, 
   mode, 
   setMode
-}) {
+}: GameControlsProps) {
   return (
     <div className="game-controls">
       

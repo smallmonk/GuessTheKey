@@ -1,7 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-export default function StaffDisplay({ clef, vexKey, animateKey }) {
-  const containerRef = useRef(null);
+interface StaffDisplayProps {
+  clef: string;
+  vexKey: string;
+  animateKey: boolean;
+}
+
+export default function StaffDisplay({ clef, vexKey, animateKey }: StaffDisplayProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;

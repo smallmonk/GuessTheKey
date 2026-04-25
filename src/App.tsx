@@ -2,18 +2,30 @@ import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { Music, CheckCircle2, XCircle, Trophy } from 'lucide-react';
 import GameControls from './components/GameControls';
 const StaffDisplay = lazy(() => import('./components/StaffDisplay'));
-import { KEYS, CLEFS, getRandomItems } from './utils/keys';
+import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import './App.css';
 
+interface Question {
+  key: KeySignature;
+  clef: string;
+}
+
+interface Feedback {
+  status: 'correct' | 'incorrect';
+  message: string;
+}
+
+type Mode = 'major' | 'minor' | 'both';
+
 function App() {
-  const [activeClefs, setActiveClefs] = useState(['treble', 'bass']);
-  const [mode, setMode] = useState('both'); // 'major', 'minor', 'both'
-  const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [options, setOptions] = useState([]);
+  const [activeClefs, setActiveClefs] = useState<string[]>(['treble', 'bass']);
+  const [mode, setMode] = useState<Mode>('both'); // 'major', 'minor', 'both'
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [options, setOptions] = useState<KeySignature[]>([]);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [animateKey, setAnimateKey] = useState(false);
-  const [feedback, setFeedback] = useState(null); // { status: 'correct'|'incorrect', message: '' }
+  const [feedback, setFeedback] = useState<Feedback | null>(null); // { status: 'correct'|'incorrect', message: '' }
 
   const generateQuestion = useCallback(() => {
     // Filter keys by mode
@@ -47,7 +59,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const toggleClef = (clefId) => {
+  const toggleClef = (clefId: string) => {
     setActiveClefs(prev => {
       if (prev.includes(clefId)) {
         if (prev.length === 1) return prev; // prevent empty
@@ -57,8 +69,9 @@ function App() {
     });
   };
 
-  const handleSelect = (option) => {
+  const handleSelect = (option: KeySignature) => {
     if (feedback) return; // prevent clicking while showing feedback
+    if (!currentQuestion) return;
 
     if (option.name === currentQuestion.key.name) {
       // Correct!
