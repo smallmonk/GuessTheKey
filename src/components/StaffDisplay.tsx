@@ -81,7 +81,8 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, questionType
 
             const formatter = new Formatter();
 
-            const voice = new VexFlowCore.Voice({ numBeats: 4, beatValue: 4 });
+            const { Voice } = VexFlowCore;
+            const voice = new Voice({ numBeats: 4, beatValue: 4 });
             voice.addTickables([staveNote]);
 
             formatter.joinVoices([voice]).formatToStave([voice], stave);
