@@ -14,8 +14,8 @@ export default function StaffDisplay({ clef, vexKey, animateKey }) {
       import('vexflow/core'),
       import('vexflow/bravura')
     ]).then(([VexFlowCore]) => {
-        const { Renderer, Stave, Flow } = VexFlowCore;
-        Flow.setMusicFont('Bravura', 'bravura', 'bravura');
+        const { Renderer, Stave, VexFlow } = VexFlowCore;
+        VexFlow.setFonts('Bravura', 'Bravura');
 
         if (!containerRef.current) return;
         // Clear previous drawing just in case it wasn't clear
