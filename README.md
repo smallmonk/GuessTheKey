@@ -1,16 +1,36 @@
-# React + Vite
+# App Features: Guess the Key / Intervals
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This document outlines the current features and capabilities of the music theory practice application.
 
-Currently, two official plugins are available:
+## Core Gameplay
+- **Multiple Choice Questions:** Users are presented with a musical element on a staff and must select the correct answer from four dynamically generated options.
+- **Score & Streak Tracking:** The app tracks the user's score and current streak of correct answers.
+- **Interactive Feedback:** Options briefly light up green (correct) or red (incorrect) when clicked, providing immediate visual feedback.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Practice Modes
+The application supports two distinct question types that users can toggle between:
 
-## React Compiler
+### 1. Key Signatures (Guess the Key)
+- **Goal:** Identify the major or minor key corresponding to a given key signature.
+- **Mode Toggle:** Users can choose to practice identifying "Major" keys or "Minor" keys.
+- **Generation:** Randomly generates key signatures (from 0 to 7 sharps/flats).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. Intervals
+- **Goal:** Identify the interval between two notes presented as a harmonic chord on the staff.
+- **Generation:** Randomly selects a base note and generates a target note based on a specific interval distance.
+- **Supported Intervals:** Includes Minor 2nd, Major 2nd, Minor 3rd, Major 3rd, Perfect 4th, Perfect 5th, Minor 6th, Major 6th, Minor 7th, Major 7th, and Perfect Octave. *(Note: Tritone is intentionally excluded).*
+- **Enharmonic Spelling:** Interval generation logic uses diatonic steps to ensure musically correct enharmonic spelling (e.g., a Major 3rd above G is B, not Cb).
 
-## Expanding the ESLint configuration
+## Musical Rendering
+- **VexFlow Integration:** Utilizes the VexFlow library to render high-quality, scalable SVG musical notation.
+- **Clef Support:** Randomly selects between Treble, Bass, Alto, and Tenor clefs (covering ABRSM Grade 5 requirements).
+- **Dynamic Formatting:** Adjusts note positioning, accidentals, and staff layout dynamically based on the generated questions.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Technology Stack
+- **Framework:** React with TypeScript.
+- **Build Tool:** Vite.
+- **Styling:** CSS with a modern, dark-themed UI.
+
+## Commands
+- **Local Development:** `npm run dev` starts the application on a local server.
+- **Production Build:** `npm run build` compiles the React application into a production-ready build.

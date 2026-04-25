@@ -5,17 +5,31 @@ export interface Interval {
 }
 
 export const INTERVALS: Interval[] = [
+  { name: 'Diminished 2nd', semitones: 0, diatonicSteps: 1 },
   { name: 'Minor 2nd', semitones: 1, diatonicSteps: 1 },
   { name: 'Major 2nd', semitones: 2, diatonicSteps: 1 },
+  { name: 'Augmented 2nd', semitones: 3, diatonicSteps: 1 },
+  { name: 'Diminished 3rd', semitones: 2, diatonicSteps: 2 },
   { name: 'Minor 3rd', semitones: 3, diatonicSteps: 2 },
   { name: 'Major 3rd', semitones: 4, diatonicSteps: 2 },
+  { name: 'Augmented 3rd', semitones: 5, diatonicSteps: 2 },
+  { name: 'Diminished 4th', semitones: 4, diatonicSteps: 3 },
   { name: 'Perfect 4th', semitones: 5, diatonicSteps: 3 },
+  { name: 'Augmented 4th', semitones: 6, diatonicSteps: 3 },
+  { name: 'Diminished 5th', semitones: 6, diatonicSteps: 4 },
   { name: 'Perfect 5th', semitones: 7, diatonicSteps: 4 },
+  { name: 'Augmented 5th', semitones: 8, diatonicSteps: 4 },
+  { name: 'Diminished 6th', semitones: 7, diatonicSteps: 5 },
   { name: 'Minor 6th', semitones: 8, diatonicSteps: 5 },
   { name: 'Major 6th', semitones: 9, diatonicSteps: 5 },
+  { name: 'Augmented 6th', semitones: 10, diatonicSteps: 5 },
+  { name: 'Diminished 7th', semitones: 9, diatonicSteps: 6 },
   { name: 'Minor 7th', semitones: 10, diatonicSteps: 6 },
   { name: 'Major 7th', semitones: 11, diatonicSteps: 6 },
+  { name: 'Augmented 7th', semitones: 12, diatonicSteps: 6 },
+  { name: 'Diminished 8ve', semitones: 11, diatonicSteps: 7 },
   { name: 'Perfect 8ve', semitones: 12, diatonicSteps: 7 },
+  { name: 'Augmented 8ve', semitones: 13, diatonicSteps: 7 },
 ];
 
 export interface Note {
