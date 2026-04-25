@@ -1,4 +1,6 @@
 import { KeySignature } from '../utils/keys';
+import { Interval } from '../utils/intervals';
+import { QuestionType } from '../App';
 
 interface Clef {
   id: string;
@@ -6,13 +8,15 @@ interface Clef {
 }
 
 interface GameControlsProps {
-  options: KeySignature[];
-  onSelect: (option: KeySignature) => void;
+  options: (KeySignature | Interval)[];
+  onSelect: (option: KeySignature | Interval) => void;
   clefs: Clef[];
   activeClefs: string[];
   toggleClef: (clefId: string) => void;
   mode: 'major' | 'minor' | 'both';
   setMode: (mode: 'major' | 'minor' | 'both') => void;
+  questionType: QuestionType;
+  setQuestionType: (qt: QuestionType) => void;
 }
 
 export default function GameControls({ 
@@ -22,7 +26,9 @@ export default function GameControls({
   activeClefs, 
   toggleClef, 
   mode, 
-  setMode
+  setMode,
+  questionType,
+  setQuestionType
 }: GameControlsProps) {
   return (
     <div className="game-controls">
@@ -43,7 +49,26 @@ export default function GameControls({
       {/* Settings Panel */}
       <div className="settings-panel">
         <div className="settings-group">
-          <h4>Mode</h4>
+          <h4>Question Type</h4>
+          <div className="toggle-group">
+            <button
+              className={`toggle-btn ${questionType === 'keys' ? 'active' : ''}`}
+              onClick={() => setQuestionType('keys')}
+            >
+              Key Signatures
+            </button>
+            <button
+              className={`toggle-btn ${questionType === 'intervals' ? 'active' : ''}`}
+              onClick={() => setQuestionType('intervals')}
+            >
+              Intervals
+            </button>
+          </div>
+        </div>
+
+        {questionType === 'keys' && (
+          <div className="settings-group">
+            <h4>Mode</h4>
           <div className="toggle-group">
             <button 
               className={`toggle-btn ${mode === 'major' ? 'active' : ''}`}
@@ -65,6 +90,7 @@ export default function GameControls({
             </button>
           </div>
         </div>
+        )}
 
         <div className="settings-group">
           <h4>Clefs (ABRSM Grade 5)</h4>
