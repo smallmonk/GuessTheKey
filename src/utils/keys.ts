@@ -48,7 +48,15 @@ export const CLEFS = [
   { id: 'tenor', label: 'Tenor Clef' },
 ];
 
-export function getRandomItems(array, n, currentItem) {
+export interface KeySignature {
+  name: string;
+  vexKey: string;
+  accidentals: number;
+  type: string;
+  mode: string;
+}
+
+export function getRandomItems(array: KeySignature[], n: number, currentItem: KeySignature): KeySignature[] {
   // Exclude keys with the same key signature (same number of accidentals and type)
   // This guarantees we don't accidentally offer the relative major/minor as an incorrect option.
   const filtered = array.filter(item =>
