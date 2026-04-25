@@ -1,12 +1,17 @@
 import { useEffect, useRef } from 'react';
 
+import { Note } from '../utils/intervals';
+import { QuestionType } from '../App';
+
 interface StaffDisplayProps {
   clef: string;
-  vexKey: string;
+  vexKey?: string;
+  intervalNotes?: [Note, Note];
+  questionType?: QuestionType;
   animateKey: boolean;
 }
 
-export default function StaffDisplay({ clef, vexKey, animateKey }: StaffDisplayProps) {
+export default function StaffDisplay({ clef, vexKey, intervalNotes, questionType = 'keys', animateKey }: StaffDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,15 +49,50 @@ export default function StaffDisplay({ clef, vexKey, animateKey }: StaffDisplayP
           // Create a stave of width 150 on the canvas.
           const stave = new Stave(10, 20, 140);
 
-          // Add clef and key signature
-          stave.addClef(clef).addKeySignature(vexKey);
+          stave.addClef(clef);
 
-          // Connect it to the rendering context and draw
-          stave.setContext(context).draw();
+          if (questionType === 'keys' && vexKey) {
+            stave.addKeySignature(vexKey);
+            stave.setContext(context).draw();
+          } else if (questionType === 'intervals' && intervalNotes) {
+            stave.setContext(context).draw();
+
+            const { StaveNote, Accidental, Formatter } = VexFlowCore;
+
+            const noteStr1 = `${intervalNotes[0].name}/${intervalNotes[0].octave}`;
+            const noteStr2 = `${intervalNotes[1].name}/${intervalNotes[1].octave}`;
+
+            // Draw as a chord (harmonic interval)
+            const staveNote = new StaveNote({
+              keys: [noteStr1, noteStr2],
+              duration: "w",
+              clef: clef
+            });
+
+            if (intervalNotes[0].accidental) {
+              staveNote.addModifier(new Accidental(intervalNotes[0].accidental), 0);
+            }
+            if (intervalNotes[1].accidental) {
+              staveNote.addModifier(new Accidental(intervalNotes[1].accidental), 1);
+            }
+
+
+
+
+            const formatter = new Formatter();
+
+            const { Voice } = VexFlowCore;
+            const voice = new Voice({ numBeats: 4, beatValue: 4 });
+            voice.addTickables([staveNote]);
+
+            formatter.joinVoices([voice]).formatToStave([voice], stave);
+
+            voice.draw(context, stave);
+          }
         });
     });
 
-  }, [clef, vexKey]);
+  }, [clef, vexKey, intervalNotes, questionType]);
 
   return (
     <div 

@@ -3,10 +3,15 @@ import { Music, CheckCircle2, XCircle, Trophy } from 'lucide-react';
 import GameControls from './components/GameControls';
 const StaffDisplay = lazy(() => import('./components/StaffDisplay'));
 import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
+import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
 import './App.css';
 
+export type QuestionType = 'keys' | 'intervals';
+
 interface Question {
-  key: KeySignature;
+  type: QuestionType;
+  key?: KeySignature;
+  interval?: IntervalQuestion;
   clef: string;
 }
 
@@ -20,44 +25,46 @@ type Mode = 'major' | 'minor' | 'both';
 function App() {
   const [activeClefs, setActiveClefs] = useState<string[]>(['treble', 'bass']);
   const [mode, setMode] = useState<Mode>('both'); // 'major', 'minor', 'both'
+  const [questionType, setQuestionType] = useState<QuestionType>('keys');
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [options, setOptions] = useState<KeySignature[]>([]);
+  const [options, setOptions] = useState<(KeySignature | Interval)[]>([]);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [animateKey, setAnimateKey] = useState(false);
   const [feedback, setFeedback] = useState<Feedback | null>(null); // { status: 'correct'|'incorrect', message: '' }
 
   const generateQuestion = useCallback(() => {
-    // Filter keys by mode
-    let validKeys = KEYS;
-    if (mode === 'major') validKeys = KEYS.filter(k => k.mode === 'major');
-    if (mode === 'minor') validKeys = KEYS.filter(k => k.mode === 'minor');
-
-    if (validKeys.length === 0 || activeClefs.length === 0) return;
-
-    // Pick random key and clef
-    const randomKey = validKeys[Math.floor(Math.random() * validKeys.length)];
+    if (activeClefs.length === 0) return;
     const randomClef = activeClefs[Math.floor(Math.random() * activeClefs.length)];
 
-    setCurrentQuestion({ key: randomKey, clef: randomClef });
+    if (questionType === 'keys') {
+      let validKeys = KEYS;
+      if (mode === 'major') validKeys = KEYS.filter(k => k.mode === 'major');
+      if (mode === 'minor') validKeys = KEYS.filter(k => k.mode === 'minor');
+      if (validKeys.length === 0) return;
+
+      const randomKey = validKeys[Math.floor(Math.random() * validKeys.length)];
+      setCurrentQuestion({ type: 'keys', key: randomKey, clef: randomClef });
+
+      const newOptions = getRandomItems(validKeys, 3, randomKey);
+      setOptions(newOptions);
+    } else {
+      const intervalQ = generateInterval(randomClef);
+      setCurrentQuestion({ type: 'intervals', interval: intervalQ, clef: randomClef });
+
+      const newOptions = getRandomIntervals(3, intervalQ.interval);
+      setOptions(newOptions);
+    }
     
-    // Generate options including the correct one
-    const newOptions = getRandomItems(validKeys, 3, randomKey);
-    setOptions(newOptions);
-    
-    // Trigger animation
     setAnimateKey(false);
     setTimeout(() => setAnimateKey(true), 50);
-  }, [activeClefs, mode]);
+  }, [activeClefs, mode, questionType]);
 
-  // Initial load
+  // Re-generate question when type changes
   useEffect(() => {
-    // We only want to generate a question on mount if one doesn't exist
-    // However, since `generateQuestion` uses state, we can ignore the exhaustive-deps or set-state-in-effect warning here
-    // as it is an explicit intentional action.
     generateQuestion();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [questionType]);
 
   const toggleClef = (clefId: string) => {
     setActiveClefs(prev => {
@@ -69,11 +76,22 @@ function App() {
     });
   };
 
-  const handleSelect = (option: KeySignature) => {
-    if (feedback) return; // prevent clicking while showing feedback
+  const handleSelect = (option: KeySignature | Interval) => {
+    if (feedback) return;
     if (!currentQuestion) return;
 
-    if (option.name === currentQuestion.key.name) {
+    let isCorrect = false;
+    let correctName = '';
+
+    if (currentQuestion.type === 'keys' && currentQuestion.key) {
+      isCorrect = option.name === currentQuestion.key.name;
+      correctName = currentQuestion.key.name;
+    } else if (currentQuestion.type === 'intervals' && currentQuestion.interval) {
+      isCorrect = option.name === currentQuestion.interval.interval.name;
+      correctName = currentQuestion.interval.interval.name;
+    }
+
+    if (isCorrect) {
       // Correct!
       setScore(s => s + 1);
       setStreak(s => s + 1);
@@ -87,7 +105,7 @@ function App() {
       setStreak(0);
       setFeedback({ 
         status: 'incorrect', 
-        message: `Oops! That was ${currentQuestion.key.name}` 
+        message: `Oops! That was ${correctName}`
       });
       setTimeout(() => {
         setFeedback(null);
@@ -121,7 +139,9 @@ function App() {
                 <Suspense fallback={<div>Loading staff...</div>}>
                   <StaffDisplay
                     clef={currentQuestion.clef}
-                    vexKey={currentQuestion.key.vexKey}
+                    vexKey={currentQuestion.key?.vexKey}
+                    intervalNotes={currentQuestion.interval?.notes}
+                    questionType={currentQuestion.type}
                     animateKey={animateKey}
                   />
                 </Suspense>
@@ -145,6 +165,8 @@ function App() {
             toggleClef={toggleClef}
             mode={mode}
             setMode={setMode}
+            questionType={questionType}
+            setQuestionType={setQuestionType}
           />
         </main>
       </div>
