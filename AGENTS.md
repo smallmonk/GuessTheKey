@@ -35,3 +35,6 @@
 - **Linting:** `npm run lint`
 - **Deploy:** Automated via GitHub Actions on push to `main`. Can be run manually with `npm run deploy` (requires `gh-pages` configuration).
 - No special environment variables are required to run the current state.
+
+## Coding Agent Instructions
+- **Ignore Compiled Packages:** When inspecting or modifying the codebase, the coding agent must ignore compiled directories and package artifacts such as `node_modules/` and `dist/`. Always operate on the source files located in `src/` and other configuration files in the root.
