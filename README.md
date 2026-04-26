@@ -18,8 +18,9 @@ The application supports two distinct question types that users can toggle betwe
 ### 2. Intervals
 - **Goal:** Identify the interval between two notes presented as a harmonic chord on the staff.
 - **Generation:** Randomly selects a base note and generates a target note based on a specific interval distance.
-- **Supported Intervals:** Includes Minor 2nd, Major 2nd, Minor 3rd, Major 3rd, Perfect 4th, Perfect 5th, Minor 6th, Major 6th, Minor 7th, Major 7th, and Perfect Octave. *(Note: Tritone is intentionally excluded).*
+- **Supported Intervals:** Includes Diminished 2nd, Minor 2nd, Major 2nd, Augmented 2nd, Diminished 3rd, Minor 3rd, Major 3rd, Augmented 3rd, Diminished 4th, Perfect 4th, Augmented 4th, Diminished 5th, Perfect 5th, Augmented 5th, Diminished 6th, Minor 6th, Major 6th, Augmented 6th, Diminished 7th, Minor 7th, Major 7th, Augmented 7th, Diminished 8ve, Perfect 8ve, and Augmented 8ve.
 - **Enharmonic Spelling:** Interval generation logic uses diatonic steps to ensure musically correct enharmonic spelling (e.g., a Major 3rd above G is B, not Cb).
+- **Audio Feedback:** The app plays the interval notes simultaneously (as a harmonic chord) when an answer is selected. This feature can be toggled on or off in the settings panel.
 
 ## Musical Rendering
 - **VexFlow Integration:** Utilizes the VexFlow library to render high-quality, scalable SVG musical notation.

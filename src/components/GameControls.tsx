@@ -17,6 +17,8 @@ interface GameControlsProps {
   setMode: (mode: 'major' | 'minor' | 'both') => void;
   questionType: QuestionType;
   setQuestionType: (qt: QuestionType) => void;
+  soundEnabled: boolean;
+  setSoundEnabled: (enabled: boolean) => void;
 }
 
 export default function GameControls({ 
@@ -28,7 +30,9 @@ export default function GameControls({
   mode, 
   setMode,
   questionType,
-  setQuestionType
+  setQuestionType,
+  soundEnabled,
+  setSoundEnabled
 }: GameControlsProps) {
   return (
     <div className="game-controls">
@@ -65,6 +69,26 @@ export default function GameControls({
             </button>
           </div>
         </div>
+
+        {questionType === 'intervals' && (
+          <div className="settings-group">
+            <h4>Sound</h4>
+            <div className="toggle-group">
+              <button
+                className={`toggle-btn ${soundEnabled ? 'active' : ''}`}
+                onClick={() => setSoundEnabled(true)}
+              >
+                Sound: On
+              </button>
+              <button
+                className={`toggle-btn ${!soundEnabled ? 'active' : ''}`}
+                onClick={() => setSoundEnabled(false)}
+              >
+                Sound: Off
+              </button>
+            </div>
+          </div>
+        )}
 
         {questionType === 'keys' && (
           <div className="settings-group">
