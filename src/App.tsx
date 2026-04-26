@@ -4,7 +4,7 @@ import GameControls from './components/GameControls';
 const StaffDisplay = lazy(() => import('./components/StaffDisplay'));
 import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
-import { playInterval } from './utils/audio';
+import { playInterval, playScale } from './utils/audio';
 import './App.css';
 
 export type QuestionType = 'keys' | 'intervals';
@@ -95,7 +95,13 @@ function App() {
 
     if (currentQuestion.type === 'intervals' && currentQuestion.interval && soundEnabled) {
       playInterval(currentQuestion.interval.notes);
+    } else if (currentQuestion.type === 'keys' && currentQuestion.key && soundEnabled) {
+      playScale(currentQuestion.key);
     }
+
+    const isKeys = currentQuestion.type === 'keys';
+    const scalePlayTime = (isKeys && soundEnabled) ? 2400 : 1000;
+    const incorrectTime = (isKeys && soundEnabled) ? 3000 : 2500;
 
     if (isCorrect) {
       // Correct!
@@ -105,7 +111,7 @@ function App() {
       setTimeout(() => {
         setFeedback(null);
         generateQuestion();
-      }, 1000);
+      }, scalePlayTime);
     } else {
       // Incorrect
       setStreak(0);
@@ -116,7 +122,7 @@ function App() {
       setTimeout(() => {
         setFeedback(null);
         generateQuestion();
-      }, 2500);
+      }, incorrectTime);
     }
   };
 
