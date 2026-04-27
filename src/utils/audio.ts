@@ -79,8 +79,8 @@ export function playScale(key: KeySignature) {
     const gainNode = audioCtx.createGain();
 
     gainNode.gain.setValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
-    gainNode.gain.setValueAtTime(0.3, startTime + duration - 0.1);
+    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
+    gainNode.gain.setValueAtTime(0.3, startTime + duration - 0.01);
     gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
 
     osc.connect(gainNode);
