@@ -63,7 +63,7 @@ export function playScale(key: KeySignature) {
 
   const intervals = key.mode === 'major'
     ? [0, 2, 4, 5, 7, 9, 11, 12]
-    : [0, 2, 3, 5, 7, 8, 11, 12]; // Harmonic minor scale
+    : [0, 2, 3, 5, 7, 8, 10, 12]; // Natural minor scale matches key signature
 
   const duration = 0.15;
 
@@ -78,15 +78,11 @@ export function playScale(key: KeySignature) {
 
     const gainNode = audioCtx.createGain();
 
-    gainNode.gain.setValueAtTime(0.3, startTime);
-    if (index === 0) {
-      gainNode.gain.setValueAtTime(0, startTime);
-      gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
-    }
-    if (index === intervals.length - 1) {
-      gainNode.gain.setValueAtTime(0.3, startTime + duration - 0.01);
-      gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
-    }
+    // Envelope for each note to prevent clicks
+    gainNode.gain.setValueAtTime(0, startTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
+    gainNode.gain.setValueAtTime(0.3, startTime + duration - 0.01);
+    gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
 
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
