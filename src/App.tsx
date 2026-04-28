@@ -4,15 +4,17 @@ import GameControls from './components/GameControls';
 const StaffDisplay = lazy(() => import('./components/StaffDisplay'));
 import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
+import { TimeSignature, TimeSignatureQuestion, generateTimeSignatureQuestion, getRandomTimeSignatures } from './utils/timeSignatures';
 import { playInterval, playScale } from './utils/audio';
 import './App.css';
 
-export type QuestionType = 'keys' | 'intervals';
+export type QuestionType = 'keys' | 'intervals' | 'timeSignatures';
 
 interface Question {
   type: QuestionType;
   key?: KeySignature;
   interval?: IntervalQuestion;
+  timeSignature?: TimeSignatureQuestion;
   clef: string;
 }
 
@@ -28,7 +30,7 @@ function App() {
   const [mode, setMode] = useState<Mode>('both'); // 'major', 'minor', 'both'
   const [questionType, setQuestionType] = useState<QuestionType>('keys');
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [options, setOptions] = useState<(KeySignature | Interval)[]>([]);
+  const [options, setOptions] = useState<(KeySignature | Interval | TimeSignature)[]>([]);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
@@ -51,12 +53,25 @@ function App() {
 
       const newOptions = getRandomItems(validKeys, 3, randomKey);
       setOptions(newOptions);
-    } else {
+    } else if (questionType === 'intervals') {
       const intervalQ = generateInterval(randomClef);
       setCurrentQuestion({ type: 'intervals', interval: intervalQ, clef: randomClef });
 
       const newOptions = getRandomIntervals(3, intervalQ.interval);
       setOptions(newOptions);
+    } else if (questionType === 'timeSignatures') {
+      const tsQ = generateTimeSignatureQuestion(randomClef);
+      setCurrentQuestion({ type: 'timeSignatures', timeSignature: tsQ, clef: randomClef });
+
+      const newOptions = getRandomTimeSignatures(3, tsQ.timeSignature);
+      // Ensure the correct option is included and shuffle
+      const allOptions = [...newOptions, tsQ.timeSignature];
+      // simple shuffle
+      for (let i = allOptions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
+      }
+      setOptions(allOptions);
     }
     
     setAnimateKey(false);
@@ -79,7 +94,7 @@ function App() {
     });
   };
 
-  const handleSelect = (option: KeySignature | Interval) => {
+  const handleSelect = (option: KeySignature | Interval | TimeSignature) => {
     if (feedback) return;
     if (!currentQuestion) return;
 
@@ -92,6 +107,9 @@ function App() {
     } else if (currentQuestion.type === 'intervals' && currentQuestion.interval) {
       isCorrect = option.name === currentQuestion.interval.interval.name;
       correctName = currentQuestion.interval.interval.name;
+    } else if (currentQuestion.type === 'timeSignatures' && currentQuestion.timeSignature) {
+      isCorrect = option.name === currentQuestion.timeSignature.timeSignature.name;
+      correctName = currentQuestion.timeSignature.timeSignature.name;
     }
 
     if (currentQuestion.type === 'intervals' && currentQuestion.interval && soundEnabled) {
@@ -157,6 +175,8 @@ function App() {
                     clef={currentQuestion.clef}
                     vexKey={currentQuestion.key?.vexKey}
                     intervalNotes={currentQuestion.interval?.notes}
+                    timeSignatureNotes={currentQuestion.timeSignature?.notes}
+                    timeSignature={currentQuestion.timeSignature?.timeSignature}
                     questionType={currentQuestion.type}
                     animateKey={animateKey}
                   />

@@ -1,5 +1,6 @@
 import { KeySignature } from '../utils/keys';
 import { Interval } from '../utils/intervals';
+import { TimeSignature } from '../utils/timeSignatures';
 import { QuestionType } from '../App';
 
 interface Clef {
@@ -8,8 +9,8 @@ interface Clef {
 }
 
 interface GameControlsProps {
-  options: (KeySignature | Interval)[];
-  onSelect: (option: KeySignature | Interval) => void;
+  options: (KeySignature | Interval | TimeSignature)[];
+  onSelect: (option: KeySignature | Interval | TimeSignature) => void;
   clefs: Clef[];
   activeClefs: string[];
   toggleClef: (clefId: string) => void;
@@ -66,6 +67,12 @@ export default function GameControls({
               onClick={() => setQuestionType('intervals')}
             >
               Intervals
+            </button>
+            <button
+              className={`toggle-btn ${questionType === 'timeSignatures' ? 'active' : ''}`}
+              onClick={() => setQuestionType('timeSignatures')}
+            >
+              Time Signatures
             </button>
           </div>
         </div>

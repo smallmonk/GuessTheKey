@@ -1,17 +1,20 @@
 import { useEffect, useRef } from 'react';
 
 import { Note } from '../utils/intervals';
+import { RhythmNote, TimeSignature } from '../utils/timeSignatures';
 import { QuestionType } from '../App';
 
 interface StaffDisplayProps {
   clef: string;
   vexKey?: string;
   intervalNotes?: [Note, Note];
+  timeSignatureNotes?: RhythmNote[];
+  timeSignature?: TimeSignature;
   questionType?: QuestionType;
   animateKey: boolean;
 }
 
-export default function StaffDisplay({ clef, vexKey, intervalNotes, questionType = 'keys', animateKey }: StaffDisplayProps) {
+export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatureNotes, timeSignature, questionType = 'keys', animateKey }: StaffDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -88,11 +91,36 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, questionType
             formatter.joinVoices([voice]).formatToStave([voice], stave);
 
             voice.draw(context, stave);
+          } else if (questionType === 'timeSignatures' && timeSignatureNotes && timeSignature) {
+            stave.setContext(context).draw();
+
+            const { StaveNote, Formatter, Voice } = VexFlowCore;
+
+            const staveNotes = timeSignatureNotes.map(n => {
+              return new StaveNote({
+                keys: n.keys,
+                duration: n.duration,
+                clef: clef
+              });
+            });
+
+            // Need to specify the correct time signature to the voice for verification
+            // Wait, standard VexFlow Voice uses beat_value and num_beats
+            const voice = new Voice({
+              numBeats: timeSignature.numBeats,
+              beatValue: timeSignature.beatValue
+            });
+            voice.addTickables(staveNotes);
+
+            const formatter = new Formatter();
+            formatter.joinVoices([voice]).formatToStave([voice], stave);
+
+            voice.draw(context, stave);
           }
         });
     });
 
-  }, [clef, vexKey, intervalNotes, questionType]);
+  }, [clef, vexKey, intervalNotes, timeSignatureNotes, timeSignature, questionType]);
 
   return (
     <div 
