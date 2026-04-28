@@ -1,4 +1,4 @@
-# App Features: Guess the Key / Intervals
+# App Features: Guess the Key / Intervals / Time Signatures
 
 This document outlines the current features and capabilities of the music theory practice application.
 
@@ -8,7 +8,7 @@ This document outlines the current features and capabilities of the music theory
 - **Interactive Feedback:** Options briefly light up green (correct) or red (incorrect) when clicked, providing immediate visual feedback.
 
 ## Practice Modes
-The application supports two distinct question types that users can toggle between:
+The application supports three distinct question types that users can toggle between:
 
 ### 1. Key Signatures (Guess the Key)
 - **Goal:** Identify the major or minor key corresponding to a given key signature.
@@ -21,6 +21,11 @@ The application supports two distinct question types that users can toggle betwe
 - **Supported Intervals:** Includes Diminished 2nd, Minor 2nd, Major 2nd, Augmented 2nd, Diminished 3rd, Minor 3rd, Major 3rd, Augmented 3rd, Diminished 4th, Perfect 4th, Augmented 4th, Diminished 5th, Perfect 5th, Augmented 5th, Diminished 6th, Minor 6th, Major 6th, Augmented 6th, Diminished 7th, Minor 7th, Major 7th, Augmented 7th, Diminished 8ve, Perfect 8ve, and Augmented 8ve.
 - **Enharmonic Spelling:** Interval generation logic uses diatonic steps to ensure musically correct enharmonic spelling (e.g., a Major 3rd above G is B, not Cb).
 - **Audio Feedback:** The app plays the interval notes simultaneously (as a harmonic chord) when an answer is selected. This feature can be toggled on or off in the settings panel.
+
+### 3. Time Signatures
+- **Goal:** Identify the time signature based on a generated measure of notes.
+- **Generation:** Randomly generates rhythmic notes based on a specific time signature.
+- **Supported Time Signatures:** Includes Simple (e.g. 2/4, 3/4, 4/4, 2/2, 3/8), Compound (e.g. 6/8, 9/8, 12/8), and Irregular (e.g. 5/8, 7/8, 5/4) time signatures.
 
 ## Musical Rendering
 - **VexFlow Integration:** Utilizes the VexFlow library to render high-quality, scalable SVG musical notation.
