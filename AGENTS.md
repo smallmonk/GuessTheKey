@@ -8,7 +8,7 @@
 
 ## Component Architecture
 - **`App` (Parent):** Manages the global state of the game including score, streak, current question, active clefs, mode, and question type.
-- **`StaffDisplay` (Child):** Dynamically loaded (`React.lazy`) component responsible for rendering the music staff, key signatures, and intervals using VexFlow.
+- **`StaffDisplay` (Child):** Dynamically loaded (`React.lazy`) component responsible for rendering the music staff, key signatures, intervals, and time signatures using VexFlow.
 - **`GameControls` (Child):** Renders multiple-choice options and game settings (question type, major/minor mode, clef selection). Receives options and selection callbacks from `App`.
 
 ## Recent Changes
@@ -16,6 +16,7 @@
 - Configured Vite base path (`base: '/GuessTheKey/'`) and added deploy scripts to `package.json` for proper asset serving on GitHub Pages.
 - Implemented dynamic imports and code splitting for `StaffDisplay` and `vexflow` core modules to optimize Vite chunk sizes.
 - Added interval generation and multiple-choice handling alongside the existing key signature questions.
+- Added the "Time Signatures" question type with rhythm generation, UI integration, and dynamic rendering via VexFlow.
 - Updated VexFlow integration to explicitly load fonts (`VexFlow.setFonts('Bravura', 'Bravura')`) and wrap rendering logic in `document.fonts.ready` to ensure proper rendering without fallbacks.
 
 ## State & Data Flow
