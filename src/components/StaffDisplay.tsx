@@ -1,17 +1,20 @@
 import { useEffect, useRef } from 'react';
 
 import { Note } from '../utils/intervals';
+import { RhythmNote, TimeSignature } from '../utils/timeSignatures';
 import { QuestionType } from '../App';
 
 interface StaffDisplayProps {
   clef: string;
   vexKey?: string;
   intervalNotes?: [Note, Note];
+  timeSignatureNotes?: RhythmNote[];
+  timeSignature?: TimeSignature;
   questionType?: QuestionType;
   animateKey: boolean;
 }
 
-export default function StaffDisplay({ clef, vexKey, intervalNotes, questionType = 'keys', animateKey }: StaffDisplayProps) {
+export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatureNotes, timeSignature, questionType = 'keys', animateKey }: StaffDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,17 +40,34 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, questionType
           // Create an SVG renderer and attach it to the DIV element.
           const renderer = new Renderer(containerRef.current, Renderer.Backends.SVG);
 
+          const isTimeSignature = questionType === 'timeSignatures';
+          const scale = 1.5;
+
+          // For time signatures, calculate dynamic width based on number of notes
+          let numNotes = 0;
+          if (isTimeSignature && timeSignatureNotes) {
+             numNotes = timeSignatureNotes.length;
+          }
+
+          // Minimum width + space per note. Let's say ~40 pixels per note
+          let dynamicStaveWidth = 140;
+          if (isTimeSignature) {
+             dynamicStaveWidth = Math.max(200, 100 + (numNotes * 35));
+          }
+
+          // Renderer width must accommodate the stave width * scale + padding
+          const rendererWidth = (dynamicStaveWidth + 20) * scale;
+
           // Configure the renderer size
           // Increase height to prevent bottom of treble clef from being cut off
-          renderer.resize(250, 200);
+          renderer.resize(rendererWidth, 200);
           const context = renderer.getContext();
-          // Context styling for a modern look
 
           // Increase size via SVG transform for better readability
-          context.scale(1.5, 1.5);
+          context.scale(scale, scale);
 
-          // Create a stave of width 150 on the canvas.
-          const stave = new Stave(10, 20, 140);
+          // Create a stave on the canvas
+          const stave = new Stave(10, 20, dynamicStaveWidth);
 
           stave.addClef(clef);
 
@@ -88,11 +108,41 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, questionType
             formatter.joinVoices([voice]).formatToStave([voice], stave);
 
             voice.draw(context, stave);
+          } else if (questionType === 'timeSignatures' && timeSignatureNotes && timeSignature) {
+            stave.setContext(context).draw();
+
+            const { StaveNote, Formatter, Voice, Beam } = VexFlowCore;
+
+            const staveNotes = timeSignatureNotes.map(n => {
+              return new StaveNote({
+                keys: n.keys,
+                duration: n.duration,
+                clef: clef
+              });
+            });
+
+            // Need to specify the correct time signature to the voice for verification
+            const voice = new Voice({
+              numBeats: timeSignature.numBeats,
+              beatValue: timeSignature.beatValue
+            });
+            voice.addTickables(staveNotes);
+
+            const formatter = new Formatter();
+            formatter.joinVoices([voice]).formatToStave([voice], stave);
+
+            voice.draw(context, stave);
+
+            // Apply beaming using vexflow's auto-beaming feature.
+            // VexFlow's generateBeams handles time signature groupings if we pass a standard configuration.
+            // But we don't necessarily have all standard groupings. Let's just pass the notes and no config for auto default.
+            const beams = Beam.generateBeams(staveNotes);
+            beams.forEach(b => b.setContext(context).draw());
           }
         });
     });
 
-  }, [clef, vexKey, intervalNotes, questionType]);
+  }, [clef, vexKey, intervalNotes, timeSignatureNotes, timeSignature, questionType]);
 
   return (
     <div 
