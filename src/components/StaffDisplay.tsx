@@ -128,15 +128,16 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatur
             });
             voice.addTickables(staveNotes);
 
+            // Apply beaming using vexflow's auto-beaming feature.
+            // VexFlow's generateBeams handles time signature groupings if we pass a standard configuration.
+            // But we don't necessarily have all standard groupings. Let's just pass the notes and no config for auto default.
+            const beams = Beam.generateBeams(staveNotes);
+
             const formatter = new Formatter();
             formatter.joinVoices([voice]).formatToStave([voice], stave);
 
             voice.draw(context, stave);
 
-            // Apply beaming using vexflow's auto-beaming feature.
-            // VexFlow's generateBeams handles time signature groupings if we pass a standard configuration.
-            // But we don't necessarily have all standard groupings. Let's just pass the notes and no config for auto default.
-            const beams = Beam.generateBeams(staveNotes);
             beams.forEach(b => b.setContext(context).draw());
           }
         });
