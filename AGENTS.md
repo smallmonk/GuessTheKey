@@ -20,6 +20,7 @@
 - Implemented dynamic imports and code splitting for `StaffDisplay` and `vexflow` core modules to optimize Vite chunk sizes.
 - Added interval generation and multiple-choice handling alongside the existing key signature questions.
 - Added the "Time Signatures" question type with rhythm generation, UI integration, and dynamic rendering via VexFlow.
+- Added the "Ornaments" question type, mapping 6 ABRSM Grade 5 ornaments to their written-out executions, rendered with VexFlow beaming and rhythm adjustments.
 - Updated VexFlow integration to explicitly load fonts (`VexFlow.setFonts('Bravura', 'Bravura')`) and wrap rendering logic in `document.fonts.ready` to ensure proper rendering without fallbacks.
 
 ## State & Data Flow
