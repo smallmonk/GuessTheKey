@@ -5,17 +5,19 @@ const StaffDisplay = lazy(() => import('./components/StaffDisplay'));
 import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
 import { TimeSignature, TimeSignatureQuestion, generateTimeSignatureQuestion, getRandomTimeSignatures } from './utils/timeSignatures';
+import { Ornament, OrnamentQuestion, generateOrnamentQuestion, getRandomOrnaments } from './utils/ornaments';
 import { playInterval, playScale } from './utils/audio';
 import { shuffle } from './utils/arrayUtils';
 import './App.css';
 
-export type QuestionType = 'keys' | 'intervals' | 'timeSignatures';
+export type QuestionType = 'keys' | 'intervals' | 'timeSignatures' | 'ornaments';
 
 interface Question {
   type: QuestionType;
   key?: KeySignature;
   interval?: IntervalQuestion;
   timeSignature?: TimeSignatureQuestion;
+  ornament?: OrnamentQuestion;
   clef: string;
 }
 
@@ -31,7 +33,7 @@ function App() {
   const [mode, setMode] = useState<Mode>('both'); // 'major', 'minor', 'both'
   const [questionType, setQuestionType] = useState<QuestionType>('keys');
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [options, setOptions] = useState<(KeySignature | Interval | TimeSignature)[]>([]);
+  const [options, setOptions] = useState<(KeySignature | Interval | TimeSignature | Ornament)[]>([]);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
@@ -69,6 +71,14 @@ function App() {
       newOptions.push(tsQ.timeSignature);
       const allOptions = shuffle(newOptions);
       setOptions(allOptions);
+    } else if (questionType === 'ornaments') {
+      const ornQ = generateOrnamentQuestion(randomClef);
+      setCurrentQuestion({ type: 'ornaments', ornament: ornQ, clef: randomClef });
+
+      const newOptions = getRandomOrnaments(3, ornQ.ornament);
+      newOptions.push(ornQ.ornament);
+      const allOptions = shuffle(newOptions);
+      setOptions(allOptions);
     }
     
     setAnimateKey(false);
@@ -91,7 +101,7 @@ function App() {
     });
   };
 
-  const handleSelect = (option: KeySignature | Interval | TimeSignature) => {
+  const handleSelect = (option: KeySignature | Interval | TimeSignature | Ornament) => {
     if (feedback) return;
     if (!currentQuestion) return;
 
@@ -107,6 +117,9 @@ function App() {
     } else if (currentQuestion.type === 'timeSignatures' && currentQuestion.timeSignature) {
       isCorrect = option.name === currentQuestion.timeSignature.timeSignature.name;
       correctName = currentQuestion.timeSignature.timeSignature.name;
+    } else if (currentQuestion.type === 'ornaments' && currentQuestion.ornament) {
+      isCorrect = option.name === currentQuestion.ornament.ornament.name;
+      correctName = currentQuestion.ornament.ornament.name;
     }
 
     if (currentQuestion.type === 'intervals' && currentQuestion.interval && soundEnabled) {
@@ -174,6 +187,8 @@ function App() {
                     intervalNotes={currentQuestion.interval?.notes}
                     timeSignatureNotes={currentQuestion.timeSignature?.notes}
                     timeSignature={currentQuestion.timeSignature?.timeSignature}
+                    ornamentNotes={currentQuestion.ornament?.notes}
+                    ornamentVoiceConfig={currentQuestion.ornament?.ornament.voiceConfig}
                     questionType={currentQuestion.type}
                     animateKey={animateKey}
                   />

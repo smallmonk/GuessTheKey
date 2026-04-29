@@ -1,4 +1,4 @@
-import { shuffle } from './arrayUtils';
+import { shuffle } from './arrayUtils.ts';
 
 export interface TimeSignature {
   name: string;
