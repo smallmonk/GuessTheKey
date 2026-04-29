@@ -26,7 +26,7 @@
   - **`StaffDisplay.tsx`:** Manages DOM manipulation (`containerRef.current.innerHTML = ''`) and asynchronous VexFlow rendering/font loading whenever staff props (`clef`, `vexKey`, `intervalNotes`, etc.) change.
 
 ## Pending Tasks
-1. Implement automated test scripts and unit/integration tests (currently missing).
+1. Expand automated test scripts and unit/integration tests (initial unit tests for `timeSignatures.ts` implemented).
 2. Improve responsive design for mobile devices and smaller screens.
 3. Expand interval generation to support more complex grading rules if necessary.
 
