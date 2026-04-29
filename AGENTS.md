@@ -11,6 +11,9 @@
 - **`StaffDisplay` (Child):** Dynamically loaded (`React.lazy`) component responsible for rendering the music staff, key signatures, intervals, and time signatures using VexFlow.
 - **`GameControls` (Child):** Renders multiple-choice options and game settings (question type, major/minor mode, clef selection). Receives options and selection callbacks from `App`.
 
+## Optimization
+- **Musical Lookups:** `src/utils/intervals.ts` uses static $O(1)$ lookup tables (`NOTE_TO_SEMITONE`, `ACCIDENTAL_TO_VAL`, `VAL_TO_ACCIDENTAL`) for performance-critical semitone calculations, replacing inefficient sequential string comparisons and $O(N)$ array searches.
+
 ## Recent Changes
 - Set up automated deployment to GitHub Pages using the `gh-pages` package and GitHub Actions workflow (`.github/workflows/deploy.yml`) on pushes to `main`.
 - Configured Vite base path (`base: '/GuessTheKey/'`) and added deploy scripts to `package.json` for proper asset serving on GitHub Pages.
