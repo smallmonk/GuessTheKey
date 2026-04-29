@@ -6,6 +6,7 @@ import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
 import { TimeSignature, TimeSignatureQuestion, generateTimeSignatureQuestion, getRandomTimeSignatures } from './utils/timeSignatures';
 import { playInterval, playScale } from './utils/audio';
+import { shuffle } from './utils/arrayUtils';
 import './App.css';
 
 export type QuestionType = 'keys' | 'intervals' | 'timeSignatures';
@@ -65,12 +66,8 @@ function App() {
 
       const newOptions = getRandomTimeSignatures(3, tsQ.timeSignature);
       // Ensure the correct option is included and shuffle
-      const allOptions = [...newOptions, tsQ.timeSignature];
-      // simple shuffle
-      for (let i = allOptions.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
-      }
+      newOptions.push(tsQ.timeSignature);
+      const allOptions = shuffle(newOptions);
       setOptions(allOptions);
     }
     

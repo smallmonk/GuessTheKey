@@ -1,3 +1,5 @@
+import { shuffle } from './arrayUtils';
+
 export interface Interval {
   name: string;
   semitones: number;
@@ -130,7 +132,7 @@ export function generateInterval(clef: string): IntervalQuestion {
 
 export function getRandomIntervals(n: number, current: Interval): Interval[] {
   const filtered = INTERVALS.filter(i => i.name !== current.name);
-  const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+  const shuffled = shuffle(filtered);
   const selected = shuffled.slice(0, n);
-  return [...selected, current].sort(() => 0.5 - Math.random());
+  return shuffle([...selected, current]);
 }
