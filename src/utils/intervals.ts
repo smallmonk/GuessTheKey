@@ -47,7 +47,7 @@ export interface IntervalQuestion {
 }
 
 const DIATONIC_NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-const DIATONIC_SEMITONES = [0, 2, 4, 5, 7, 9, 11];
+// const DIATONIC_SEMITONES = [0, 2, 4, 5, 7, 9, 11];
 
 const NOTE_TO_SEMITONE: Record<string, number> = {
   'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11
