@@ -106,20 +106,15 @@ function App() {
     if (!currentQuestion) return;
 
     let isCorrect = false;
-    let correctName = '';
 
     if (currentQuestion.type === 'keys' && currentQuestion.key) {
       isCorrect = option.name === currentQuestion.key.name;
-      correctName = currentQuestion.key.name;
     } else if (currentQuestion.type === 'intervals' && currentQuestion.interval) {
       isCorrect = option.name === currentQuestion.interval.interval.name;
-      correctName = currentQuestion.interval.interval.name;
     } else if (currentQuestion.type === 'timeSignatures' && currentQuestion.timeSignature) {
       isCorrect = option.name === currentQuestion.timeSignature.timeSignature.name;
-      correctName = currentQuestion.timeSignature.timeSignature.name;
     } else if (currentQuestion.type === 'ornaments' && currentQuestion.ornament) {
       isCorrect = option.name === currentQuestion.ornament.ornament.name;
-      correctName = currentQuestion.ornament.ornament.name;
     }
 
     if (currentQuestion.type === 'intervals' && currentQuestion.interval && soundEnabled) {
@@ -133,7 +128,6 @@ function App() {
     const isKeys = currentQuestion.type === 'keys';
     const isOrnament = currentQuestion.type === 'ornaments';
     const soundTime = soundEnabled ? (isKeys ? 2400 : (isOrnament ? 2000 : 1000)) : 1000;
-    const incorrectTime = soundEnabled ? (isKeys ? 3000 : (isOrnament ? 2500 : 2500)) : 2500;
 
     setTotalQuestions(t => t + 1);
 
