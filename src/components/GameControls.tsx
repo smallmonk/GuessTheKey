@@ -49,7 +49,7 @@ export default function GameControls({
           >
             {opt.name}
             {'symbol' in opt && opt.symbol ? (
-              <span style={{ fontSize: '1.5em', marginLeft: '0.25em', verticalAlign: 'middle' }}>
+              <span style={{ fontSize: '1.5em', marginLeft: '0.25em', verticalAlign: 'middle', fontFamily: '"Noto Music", "Bravura", "Segoe UI Symbol", "Apple Symbols", "Symbola", serif' }}>
                 {opt.symbol}
               </span>
             ) : null}
