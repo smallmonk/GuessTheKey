@@ -8,16 +8,17 @@ export interface OrnamentVoiceConfig {
 
 export interface Ornament {
   name: string;
+  symbol: string;
   voiceConfig: OrnamentVoiceConfig;
 }
 
 export const ORNAMENTS: Ornament[] = [
-  { name: 'Trill', voiceConfig: { numBeats: 1, beatValue: 4 } },
-  { name: 'Upper Mordent', voiceConfig: { numBeats: 1, beatValue: 4 } },
-  { name: 'Lower Mordent', voiceConfig: { numBeats: 1, beatValue: 4 } },
-  { name: 'Turn', voiceConfig: { numBeats: 1, beatValue: 4 } },
-  { name: 'Appoggiatura', voiceConfig: { numBeats: 1, beatValue: 4 } },
-  { name: 'Acciaccatura', voiceConfig: { numBeats: 3, beatValue: 16 } },
+  { name: 'Trill', symbol: 'tr', voiceConfig: { numBeats: 1, beatValue: 4 } },
+  { name: 'Upper Mordent', symbol: '𝆜', voiceConfig: { numBeats: 1, beatValue: 4 } },
+  { name: 'Lower Mordent', symbol: '𝆝', voiceConfig: { numBeats: 1, beatValue: 4 } },
+  { name: 'Turn', symbol: '𝆗', voiceConfig: { numBeats: 1, beatValue: 4 } },
+  { name: 'Appoggiatura', symbol: '𝆕', voiceConfig: { numBeats: 1, beatValue: 4 } },
+  { name: 'Acciaccatura', symbol: '𝆔', voiceConfig: { numBeats: 3, beatValue: 16 } },
 ];
 
 export interface OrnamentQuestion {

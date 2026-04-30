@@ -48,6 +48,7 @@ export default function GameControls({
             onClick={() => onSelect(opt)}
           >
             {opt.name}
+            {'symbol' in opt && opt.symbol ? ` ${opt.symbol}` : ''}
           </button>
         ))}
       </div>
