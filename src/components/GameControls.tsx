@@ -48,6 +48,11 @@ export default function GameControls({
             onClick={() => onSelect(opt)}
           >
             {opt.name}
+            {'symbol' in opt && opt.symbol ? (
+              <span style={{ fontSize: '1.5em', marginLeft: '0.25em', verticalAlign: 'middle' }}>
+                {opt.symbol}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>
