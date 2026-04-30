@@ -6,7 +6,7 @@ import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
 import { TimeSignature, TimeSignatureQuestion, generateTimeSignatureQuestion, getRandomTimeSignatures } from './utils/timeSignatures';
 import { Ornament, OrnamentQuestion, generateOrnamentQuestion, getRandomOrnaments } from './utils/ornaments';
-import { playInterval, playScale } from './utils/audio';
+import { playInterval, playScale, playOrnament } from './utils/audio';
 import { shuffle } from './utils/arrayUtils';
 import './App.css';
 
@@ -126,11 +126,14 @@ function App() {
       playInterval(currentQuestion.interval.notes);
     } else if (currentQuestion.type === 'keys' && currentQuestion.key && soundEnabled) {
       playScale(currentQuestion.key);
+    } else if (currentQuestion.type === 'ornaments' && currentQuestion.ornament && soundEnabled) {
+      playOrnament(currentQuestion.ornament.notes);
     }
 
     const isKeys = currentQuestion.type === 'keys';
-    const scalePlayTime = (isKeys && soundEnabled) ? 2400 : 1000;
-    const incorrectTime = (isKeys && soundEnabled) ? 3000 : 2500;
+    const isOrnament = currentQuestion.type === 'ornaments';
+    const soundTime = soundEnabled ? (isKeys ? 2400 : (isOrnament ? 2000 : 1000)) : 1000;
+    const incorrectTime = soundEnabled ? (isKeys ? 3000 : (isOrnament ? 2500 : 2500)) : 2500;
 
     setTotalQuestions(t => t + 1);
 
@@ -142,7 +145,7 @@ function App() {
       setTimeout(() => {
         setFeedback(null);
         generateQuestion();
-      }, scalePlayTime);
+      }, soundTime);
     } else {
       // Incorrect
       setStreak(0);
