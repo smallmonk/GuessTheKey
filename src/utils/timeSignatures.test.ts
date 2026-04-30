@@ -8,12 +8,14 @@ test('getRandomTimeSignatures returns the correct count of items', () => {
   assert.strictEqual(result.length, count, `Expected ${count} items, got ${result.length}`);
 });
 
-test('getRandomTimeSignatures respects the exclude parameter', () => {
-  const exclude = TIME_SIGNATURES[0];
+test('getRandomTimeSignatures respects the exclude parameter and filters equivalents', () => {
+  const exclude = TIME_SIGNATURES.find(ts => ts.name === '4/4')!;
   const result = getRandomTimeSignatures(TIME_SIGNATURES.length, exclude);
-  const found = result.find(ts => ts.name === exclude.name);
+  const found = result.find(ts => ts.name === '4/4');
   assert.strictEqual(found, undefined, 'Should not contain the excluded time signature');
-  assert.strictEqual(result.length, TIME_SIGNATURES.length - 1, 'Should contain all but one time signature');
+
+  const foundEquivalent = result.find(ts => ts.name === '2/2');
+  assert.strictEqual(foundEquivalent, undefined, 'Should not contain mathematically equivalent time signatures');
 });
 
 test('getRandomTimeSignatures handles counts exceeding the available list', () => {

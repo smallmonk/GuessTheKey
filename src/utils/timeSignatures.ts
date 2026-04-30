@@ -45,7 +45,8 @@ export interface TimeSignatureQuestion {
 export function getRandomTimeSignatures(count: number, exclude?: TimeSignature): TimeSignature[] {
   let available = [...TIME_SIGNATURES];
   if (exclude) {
-    available = available.filter(ts => ts.name !== exclude.name);
+    const excludeRatio = exclude.numBeats / exclude.beatValue;
+    available = available.filter(ts => (ts.numBeats / ts.beatValue) !== excludeRatio);
   }
 
   return shuffle(available).slice(0, count);
