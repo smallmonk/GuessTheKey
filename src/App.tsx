@@ -5,16 +5,19 @@ const StaffDisplay = lazy(() => import('./components/StaffDisplay'));
 import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
 import { TimeSignature, TimeSignatureQuestion, generateTimeSignatureQuestion, getRandomTimeSignatures } from './utils/timeSignatures';
-import { playInterval, playScale } from './utils/audio';
+import { Ornament, OrnamentQuestion, generateOrnamentQuestion, getRandomOrnaments } from './utils/ornaments';
+import { playInterval, playScale, playOrnament } from './utils/audio';
+import { shuffle } from './utils/arrayUtils';
 import './App.css';
 
-export type QuestionType = 'keys' | 'intervals' | 'timeSignatures';
+export type QuestionType = 'keys' | 'intervals' | 'timeSignatures' | 'ornaments';
 
 interface Question {
   type: QuestionType;
   key?: KeySignature;
   interval?: IntervalQuestion;
   timeSignature?: TimeSignatureQuestion;
+  ornament?: OrnamentQuestion;
   clef: string;
 }
 
@@ -30,7 +33,7 @@ function App() {
   const [mode, setMode] = useState<Mode>('both'); // 'major', 'minor', 'both'
   const [questionType, setQuestionType] = useState<QuestionType>('keys');
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [options, setOptions] = useState<(KeySignature | Interval | TimeSignature)[]>([]);
+  const [options, setOptions] = useState<(KeySignature | Interval | TimeSignature | Ornament)[]>([]);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
@@ -65,12 +68,16 @@ function App() {
 
       const newOptions = getRandomTimeSignatures(3, tsQ.timeSignature);
       // Ensure the correct option is included and shuffle
-      const allOptions = [...newOptions, tsQ.timeSignature];
-      // simple shuffle
-      for (let i = allOptions.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
-      }
+      newOptions.push(tsQ.timeSignature);
+      const allOptions = shuffle(newOptions);
+      setOptions(allOptions);
+    } else if (questionType === 'ornaments') {
+      const ornQ = generateOrnamentQuestion(randomClef);
+      setCurrentQuestion({ type: 'ornaments', ornament: ornQ, clef: randomClef });
+
+      const newOptions = getRandomOrnaments(3, ornQ.ornament);
+      newOptions.push(ornQ.ornament);
+      const allOptions = shuffle(newOptions);
       setOptions(allOptions);
     }
     
@@ -94,33 +101,33 @@ function App() {
     });
   };
 
-  const handleSelect = (option: KeySignature | Interval | TimeSignature) => {
+  const handleSelect = (option: KeySignature | Interval | TimeSignature | Ornament) => {
     if (feedback) return;
     if (!currentQuestion) return;
 
     let isCorrect = false;
-    let correctName = '';
 
     if (currentQuestion.type === 'keys' && currentQuestion.key) {
       isCorrect = option.name === currentQuestion.key.name;
-      correctName = currentQuestion.key.name;
     } else if (currentQuestion.type === 'intervals' && currentQuestion.interval) {
       isCorrect = option.name === currentQuestion.interval.interval.name;
-      correctName = currentQuestion.interval.interval.name;
     } else if (currentQuestion.type === 'timeSignatures' && currentQuestion.timeSignature) {
       isCorrect = option.name === currentQuestion.timeSignature.timeSignature.name;
-      correctName = currentQuestion.timeSignature.timeSignature.name;
+    } else if (currentQuestion.type === 'ornaments' && currentQuestion.ornament) {
+      isCorrect = option.name === currentQuestion.ornament.ornament.name;
     }
 
     if (currentQuestion.type === 'intervals' && currentQuestion.interval && soundEnabled) {
       playInterval(currentQuestion.interval.notes);
     } else if (currentQuestion.type === 'keys' && currentQuestion.key && soundEnabled) {
       playScale(currentQuestion.key);
+    } else if (currentQuestion.type === 'ornaments' && currentQuestion.ornament && soundEnabled) {
+      playOrnament(currentQuestion.ornament.notes);
     }
 
     const isKeys = currentQuestion.type === 'keys';
-    const scalePlayTime = (isKeys && soundEnabled) ? 2400 : 1000;
-    const incorrectTime = (isKeys && soundEnabled) ? 3000 : 2500;
+    const isOrnament = currentQuestion.type === 'ornaments';
+    const soundTime = soundEnabled ? (isKeys ? 2400 : (isOrnament ? 2000 : 1000)) : 1000;
 
     setTotalQuestions(t => t + 1);
 
@@ -132,19 +139,24 @@ function App() {
       setTimeout(() => {
         setFeedback(null);
         generateQuestion();
-      }, scalePlayTime);
+      }, soundTime);
     } else {
       // Incorrect
       setStreak(0);
       setFeedback({ 
         status: 'incorrect', 
-        message: `Oops! That was ${correctName}`
+        message: `Oops! Incorrect.`
       });
-      setTimeout(() => {
-        setFeedback(null);
-        generateQuestion();
-      }, incorrectTime);
     }
+  };
+
+  const handleTryAgain = () => {
+    setFeedback(null);
+  };
+
+  const handleNextQuestion = () => {
+    setFeedback(null);
+    generateQuestion();
   };
 
   return (
@@ -177,6 +189,8 @@ function App() {
                     intervalNotes={currentQuestion.interval?.notes}
                     timeSignatureNotes={currentQuestion.timeSignature?.notes}
                     timeSignature={currentQuestion.timeSignature?.timeSignature}
+                    ornamentNotes={currentQuestion.ornament?.notes}
+                    ornamentVoiceConfig={currentQuestion.ornament?.ornament.voiceConfig}
                     questionType={currentQuestion.type}
                     animateKey={animateKey}
                   />
@@ -189,6 +203,12 @@ function App() {
               <div className={`feedback-overlay ${feedback.status}`}>
                  {feedback.status === 'correct' ? <CheckCircle2 size={64} /> : <XCircle size={64} />}
                  <h2>{feedback.message}</h2>
+                 {feedback.status === 'incorrect' && (
+                   <div className="feedback-actions">
+                     <button className="feedback-btn primary" onClick={handleTryAgain}>Try Again</button>
+                     <button className="feedback-btn secondary" onClick={handleNextQuestion}>Next Question</button>
+                   </div>
+                 )}
               </div>
             )}
           </div>

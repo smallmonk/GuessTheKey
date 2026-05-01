@@ -11,12 +11,16 @@
 - **`StaffDisplay` (Child):** Dynamically loaded (`React.lazy`) component responsible for rendering the music staff, key signatures, intervals, and time signatures using VexFlow.
 - **`GameControls` (Child):** Renders multiple-choice options and game settings (question type, major/minor mode, clef selection). Receives options and selection callbacks from `App`.
 
+## Optimization
+- **Musical Lookups:** `src/utils/intervals.ts` uses static $O(1)$ lookup tables (`NOTE_TO_SEMITONE`, `ACCIDENTAL_TO_VAL`, `VAL_TO_ACCIDENTAL`) for performance-critical semitone calculations, replacing inefficient sequential string comparisons and $O(N)$ array searches.
+
 ## Recent Changes
 - Set up automated deployment to GitHub Pages using the `gh-pages` package and GitHub Actions workflow (`.github/workflows/deploy.yml`) on pushes to `main`.
 - Configured Vite base path (`base: '/GuessTheKey/'`) and added deploy scripts to `package.json` for proper asset serving on GitHub Pages.
 - Implemented dynamic imports and code splitting for `StaffDisplay` and `vexflow` core modules to optimize Vite chunk sizes.
 - Added interval generation and multiple-choice handling alongside the existing key signature questions.
 - Added the "Time Signatures" question type with rhythm generation, UI integration, and dynamic rendering via VexFlow.
+- Added the "Ornaments" question type, mapping 6 ABRSM Grade 5 ornaments to their written-out executions, rendered with VexFlow beaming and rhythm adjustments.
 - Updated VexFlow integration to explicitly load fonts (`VexFlow.setFonts('Bravura', 'Bravura')`) and wrap rendering logic in `document.fonts.ready` to ensure proper rendering without fallbacks.
 
 ## State & Data Flow
@@ -26,7 +30,7 @@
   - **`StaffDisplay.tsx`:** Manages DOM manipulation (`containerRef.current.innerHTML = ''`) and asynchronous VexFlow rendering/font loading whenever staff props (`clef`, `vexKey`, `intervalNotes`, etc.) change.
 
 ## Pending Tasks
-1. Implement automated test scripts and unit/integration tests (currently missing).
+1. Expand automated test scripts and unit/integration tests (initial unit tests for `timeSignatures.ts` implemented).
 2. Improve responsive design for mobile devices and smaller screens.
 3. Expand interval generation to support more complex grading rules if necessary.
 

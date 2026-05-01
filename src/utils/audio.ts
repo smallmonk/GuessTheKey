@@ -1,5 +1,6 @@
 import { Note } from './intervals';
 import { KeySignature } from './keys';
+import { RhythmNote } from './timeSignatures';
 
 const NOTE_OFFSETS: Record<string, number> = { 'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11 };
 const ACCIDENTAL_OFFSETS: Record<string, number> = { '': 0, '#': 1, 'b': -1, '##': 2, 'bb': -2 };
@@ -89,5 +90,69 @@ export function playScale(key: KeySignature) {
 
     osc.start(startTime);
     osc.stop(startTime + duration);
+  });
+}
+
+export function playOrnament(notes: RhythmNote[]) {
+  if (!AudioContextClass) return;
+  if (!audioCtx) {
+    audioCtx = new AudioContextClass();
+  }
+
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
+  const durationMap: Record<string, number> = {
+    '32': 0.0625,
+    '16': 0.125,
+    '8': 0.25,
+    'q': 0.5,
+    'h': 1.0,
+    'w': 2.0
+  };
+
+  let currentTime = audioCtx.currentTime;
+
+  notes.forEach((note) => {
+    // Only play the first key in the rhythm note for ornaments
+    if (note.keys.length === 0) return;
+
+    // Parse the key string, e.g. "c/4" or "c#/4"
+    const keyStr = note.keys[0];
+    const [notePart, octaveStr] = keyStr.split('/');
+    const noteName = notePart.charAt(0).toUpperCase();
+    const accidental = notePart.slice(1);
+    const octave = parseInt(octaveStr, 10);
+
+    const midi = 12 * (octave + 1) + NOTE_OFFSETS[noteName] + (ACCIDENTAL_OFFSETS[accidental] || 0);
+    const freq = 440 * Math.pow(2, (midi - 69) / 12);
+
+    // Duration in seconds, with a bit of space between notes
+    const duration = durationMap[note.duration.replace('r', '')] || 0.25;
+
+    if (note.duration.includes('r')) {
+      currentTime += duration;
+      return;
+    }
+
+    const osc = audioCtx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+
+    const gainNode = audioCtx.createGain();
+
+    gainNode.gain.setValueAtTime(0, currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, currentTime + Math.min(0.01, duration * 0.1));
+    gainNode.gain.setValueAtTime(0.3, currentTime + duration - Math.min(0.01, duration * 0.1));
+    gainNode.gain.linearRampToValueAtTime(0, currentTime + duration);
+
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    osc.start(currentTime);
+    osc.stop(currentTime + duration);
+
+    currentTime += duration;
   });
 }

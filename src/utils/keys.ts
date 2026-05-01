@@ -1,3 +1,5 @@
+import { shuffle } from './arrayUtils';
+
 export const KEYS = [
   // 0 accidentals
   { name: 'C Major', vexKey: 'C', accidentals: 0, type: 'none', mode: 'major' },
@@ -62,8 +64,8 @@ export function getRandomItems(array: KeySignature[], n: number, currentItem: Ke
   const filtered = array.filter(item =>
     !(item.accidentals === currentItem.accidentals && item.type === currentItem.type)
   );
-  const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+  const shuffled = shuffle(filtered);
   const selected = shuffled.slice(0, n);
-  const result = [...selected, currentItem].sort(() => 0.5 - Math.random());
+  const result = shuffle([...selected, currentItem]);
   return result;
 }

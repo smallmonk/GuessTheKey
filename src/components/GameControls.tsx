@@ -1,6 +1,7 @@
 import { KeySignature } from '../utils/keys';
 import { Interval } from '../utils/intervals';
 import { TimeSignature } from '../utils/timeSignatures';
+import { Ornament } from '../utils/ornaments';
 import { QuestionType } from '../App';
 
 interface Clef {
@@ -9,8 +10,8 @@ interface Clef {
 }
 
 interface GameControlsProps {
-  options: (KeySignature | Interval | TimeSignature)[];
-  onSelect: (option: KeySignature | Interval | TimeSignature) => void;
+  options: (KeySignature | Interval | TimeSignature | Ornament)[];
+  onSelect: (option: KeySignature | Interval | TimeSignature | Ornament) => void;
   clefs: Clef[];
   activeClefs: string[];
   toggleClef: (clefId: string) => void;
@@ -47,6 +48,11 @@ export default function GameControls({
             onClick={() => onSelect(opt)}
           >
             {opt.name}
+            {'symbol' in opt && opt.symbol ? (
+              <span style={{ fontSize: '1.5em', marginLeft: '0.25em', verticalAlign: 'middle', fontFamily: '"Noto Music", "Bravura", "Segoe UI Symbol", "Apple Symbols", "Symbola", serif' }}>
+                {opt.symbol}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>
@@ -59,20 +65,30 @@ export default function GameControls({
             <button
               className={`toggle-btn ${questionType === 'keys' ? 'active' : ''}`}
               onClick={() => setQuestionType('keys')}
+              aria-pressed={questionType === 'keys'}
             >
               Key Signatures
             </button>
             <button
               className={`toggle-btn ${questionType === 'intervals' ? 'active' : ''}`}
               onClick={() => setQuestionType('intervals')}
+              aria-pressed={questionType === 'intervals'}
             >
               Intervals
             </button>
             <button
               className={`toggle-btn ${questionType === 'timeSignatures' ? 'active' : ''}`}
               onClick={() => setQuestionType('timeSignatures')}
+              aria-pressed={questionType === 'timeSignatures'}
             >
               Time Signatures
+            </button>
+            <button
+              className={`toggle-btn ${questionType === 'ornaments' ? 'active' : ''}`}
+              onClick={() => setQuestionType('ornaments')}
+              aria-pressed={questionType === 'ornaments'}
+            >
+              Ornaments
             </button>
           </div>
         </div>
@@ -84,12 +100,14 @@ export default function GameControls({
               <button
                 className={`toggle-btn ${soundEnabled ? 'active' : ''}`}
                 onClick={() => setSoundEnabled(true)}
+                aria-pressed={soundEnabled}
               >
                 Sound: On
               </button>
               <button
                 className={`toggle-btn ${!soundEnabled ? 'active' : ''}`}
                 onClick={() => setSoundEnabled(false)}
+                aria-pressed={!soundEnabled}
               >
                 Sound: Off
               </button>
@@ -104,18 +122,21 @@ export default function GameControls({
             <button 
               className={`toggle-btn ${mode === 'major' ? 'active' : ''}`}
               onClick={() => setMode('major')}
+              aria-pressed={mode === 'major'}
             >
               Major Keys
             </button>
             <button 
               className={`toggle-btn ${mode === 'minor' ? 'active' : ''}`}
               onClick={() => setMode('minor')}
+              aria-pressed={mode === 'minor'}
             >
               Minor Keys
             </button>
             <button 
               className={`toggle-btn ${mode === 'both' ? 'active' : ''}`}
               onClick={() => setMode('both')}
+              aria-pressed={mode === 'both'}
             >
               Both
             </button>
@@ -131,6 +152,7 @@ export default function GameControls({
                 key={c.id}
                 className={`toggle-btn ${activeClefs.includes(c.id) ? 'active' : ''}`}
                 onClick={() => toggleClef(c.id)}
+                aria-pressed={activeClefs.includes(c.id)}
               >
                 {c.label}
               </button>

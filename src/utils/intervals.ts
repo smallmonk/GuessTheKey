@@ -1,3 +1,5 @@
+import { shuffle } from './arrayUtils';
+
 export interface Interval {
   name: string;
   semitones: number;
@@ -45,23 +47,26 @@ export interface IntervalQuestion {
 }
 
 const DIATONIC_NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-const DIATONIC_SEMITONES = [0, 2, 4, 5, 7, 9, 11];
+// const DIATONIC_SEMITONES = [0, 2, 4, 5, 7, 9, 11];
+
+const NOTE_TO_SEMITONE: Record<string, number> = {
+  'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11
+};
+
+const ACCIDENTAL_TO_VAL: Record<string, number> = {
+  '': 0, '#': 1, 'b': -1, '##': 2, 'bb': -2
+};
+
+const VAL_TO_ACCIDENTAL: Record<number, string> = {
+  0: '', 1: '#', [-1]: 'b', 2: '##', [-2]: 'bb'
+};
 
 function getSemitoneDifference(baseNoteName: string, baseAccidental: string, baseOctave: number, targetNoteName: string, targetAccidental: string, targetOctave: number): number {
-    const baseDiatonic = DIATONIC_SEMITONES[DIATONIC_NOTES.indexOf(baseNoteName)];
-    const targetDiatonic = DIATONIC_SEMITONES[DIATONIC_NOTES.indexOf(targetNoteName)];
+    const baseDiatonic = NOTE_TO_SEMITONE[baseNoteName] ?? 0;
+    const targetDiatonic = NOTE_TO_SEMITONE[targetNoteName] ?? 0;
 
-    let baseAccidentalVal = 0;
-    if (baseAccidental === '#') baseAccidentalVal = 1;
-    if (baseAccidental === 'b') baseAccidentalVal = -1;
-    if (baseAccidental === '##') baseAccidentalVal = 2;
-    if (baseAccidental === 'bb') baseAccidentalVal = -2;
-
-    let targetAccidentalVal = 0;
-    if (targetAccidental === '#') targetAccidentalVal = 1;
-    if (targetAccidental === 'b') targetAccidentalVal = -1;
-    if (targetAccidental === '##') targetAccidentalVal = 2;
-    if (targetAccidental === 'bb') targetAccidentalVal = -2;
+    const baseAccidentalVal = ACCIDENTAL_TO_VAL[baseAccidental] ?? 0;
+    const targetAccidentalVal = ACCIDENTAL_TO_VAL[targetAccidental] ?? 0;
 
     const baseTotal = baseDiatonic + baseAccidentalVal + (baseOctave * 12);
     const targetTotal = targetDiatonic + targetAccidentalVal + (targetOctave * 12);
@@ -73,12 +78,7 @@ function getAccidentalForTarget(targetNoteName: string, targetOctave: number, ba
     const semitonesWithoutAccidental = getSemitoneDifference(baseNoteName, baseAccidental, baseOctave, targetNoteName, '', targetOctave);
     const accidentalDiff = requiredSemitones - semitonesWithoutAccidental;
 
-    if (accidentalDiff === 0) return '';
-    if (accidentalDiff === 1) return '#';
-    if (accidentalDiff === -1) return 'b';
-    if (accidentalDiff === 2) return '##';
-    if (accidentalDiff === -2) return 'bb';
-    return ''; // Fallback, shouldn't happen for these intervals unless the base note is extreme
+    return VAL_TO_ACCIDENTAL[accidentalDiff] ?? '';
 }
 
 export function generateInterval(clef: string): IntervalQuestion {
@@ -132,7 +132,7 @@ export function generateInterval(clef: string): IntervalQuestion {
 
 export function getRandomIntervals(n: number, current: Interval): Interval[] {
   const filtered = INTERVALS.filter(i => i.name !== current.name);
-  const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+  const shuffled = shuffle(filtered);
   const selected = shuffled.slice(0, n);
-  return [...selected, current].sort(() => 0.5 - Math.random());
+  return shuffle([...selected, current]);
 }

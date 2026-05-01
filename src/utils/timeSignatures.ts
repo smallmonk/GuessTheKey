@@ -1,3 +1,5 @@
+import { shuffle } from './arrayUtils.ts';
+
 export interface TimeSignature {
   name: string;
   numBeats: number;
@@ -43,18 +45,11 @@ export interface TimeSignatureQuestion {
 export function getRandomTimeSignatures(count: number, exclude?: TimeSignature): TimeSignature[] {
   let available = [...TIME_SIGNATURES];
   if (exclude) {
-    available = available.filter(ts => ts.name !== exclude.name);
+    const excludeRatio = exclude.numBeats / exclude.beatValue;
+    available = available.filter(ts => (ts.numBeats / ts.beatValue) !== excludeRatio);
   }
 
-  const result: TimeSignature[] = [];
-  for (let i = 0; i < count; i++) {
-    if (available.length === 0) break;
-    const index = Math.floor(Math.random() * available.length);
-    result.push(available[index]);
-    available.splice(index, 1);
-  }
-
-  return result;
+  return shuffle(available).slice(0, count);
 }
 
 // Map beat values to vexflow base durations

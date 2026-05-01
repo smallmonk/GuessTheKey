@@ -8,7 +8,7 @@ This document outlines the current features and capabilities of the music theory
 - **Interactive Feedback:** Options briefly light up green (correct) or red (incorrect) when clicked, providing immediate visual feedback.
 
 ## Practice Modes
-The application supports three distinct question types that users can toggle between:
+The application supports four distinct question types that users can toggle between:
 
 ### 1. Key Signatures (Guess the Key)
 - **Goal:** Identify the major or minor key corresponding to a given key signature.
@@ -26,6 +26,11 @@ The application supports three distinct question types that users can toggle bet
 - **Goal:** Identify the time signature based on a generated measure of notes.
 - **Generation:** Randomly generates rhythmic notes based on a specific time signature.
 - **Supported Time Signatures:** Includes Simple (e.g. 2/4, 3/4, 4/4, 2/2, 3/8), Compound (e.g. 6/8, 9/8, 12/8), and Irregular (e.g. 5/8, 7/8, 5/4) time signatures.
+
+### 4. Ornaments
+- **Goal:** Identify the ornament name based on its written-out execution on the staff.
+- **Generation:** Randomly selects an ornament type and dynamically generates its musical execution (including rhythm and beaming) using VexFlow.
+- **Supported Ornaments:** Includes Trill, Upper Mordent, Lower Mordent, Turn, Appoggiatura, and Acciaccatura.
 
 ## Musical Rendering
 - **VexFlow Integration:** Utilizes the VexFlow library to render high-quality, scalable SVG musical notation.
