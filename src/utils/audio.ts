@@ -171,8 +171,8 @@ export function playCadence(chords: CadenceNote[]) {
   let currentTime = audioCtx.currentTime;
 
   chords.forEach((chord) => {
-    // 2 seconds per half note for cadence
-    const duration = 1.2;
+    // Half note cadence duration reduced to 0.6 seconds
+    const duration = 0.6;
 
     chord.keys.forEach(keyStr => {
       const [notePart, octaveStr] = keyStr.split('/');
@@ -191,9 +191,9 @@ export function playCadence(chords: CadenceNote[]) {
 
       gainNode.gain.setValueAtTime(0, currentTime);
       // Fade in
-      gainNode.gain.linearRampToValueAtTime(0.25, currentTime + 0.1);
+      gainNode.gain.linearRampToValueAtTime(0.25, currentTime + 0.05);
       // Sustain
-      gainNode.gain.setValueAtTime(0.25, currentTime + duration - 0.1);
+      gainNode.gain.setValueAtTime(0.25, currentTime + duration - 0.05);
       // Fade out
       gainNode.gain.linearRampToValueAtTime(0, currentTime + duration);
 
@@ -205,6 +205,6 @@ export function playCadence(chords: CadenceNote[]) {
     });
 
     // Move time forward for the next chord, add a tiny gap
-    currentTime += duration + 0.1;
+    currentTime += duration + 0.05;
   });
 }

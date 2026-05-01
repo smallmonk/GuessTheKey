@@ -142,7 +142,7 @@ function App() {
     const isKeys = currentQuestion.type === 'keys';
     const isOrnament = currentQuestion.type === 'ornaments';
     const isCadence = currentQuestion.type === 'cadences';
-    const soundTime = soundEnabled ? (isKeys ? 2400 : (isOrnament ? 2000 : (isCadence ? 2600 : 1000))) : 1000;
+    const soundTime = soundEnabled ? (isKeys ? 2400 : (isOrnament ? 2000 : (isCadence ? 1300 : 1000))) : 1000;
 
     setTotalQuestions(t => t + 1);
 
