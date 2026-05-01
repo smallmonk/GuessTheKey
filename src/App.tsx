@@ -87,7 +87,9 @@ function App() {
 
   // Re-generate question when type changes
   useEffect(() => {
-    generateQuestion();
+    // We defer the generation slightly to avoid synchronous setState warnings inside the effect
+    const timer = setTimeout(() => generateQuestion(), 0);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionType]);
 
@@ -200,12 +202,16 @@ function App() {
             
             {/* Feedback Overlay inside flashcard */}
             {feedback && (
-              <div className={`feedback-overlay ${feedback.status}`}>
+              <div
+                className={`feedback-overlay ${feedback.status}`}
+                role="alert"
+                aria-live="assertive"
+              >
                  {feedback.status === 'correct' ? <CheckCircle2 size={64} /> : <XCircle size={64} />}
                  <h2>{feedback.message}</h2>
                  {feedback.status === 'incorrect' && (
                    <div className="feedback-actions">
-                     <button className="feedback-btn primary" onClick={handleTryAgain}>Try Again</button>
+                     <button className="feedback-btn primary" onClick={handleTryAgain} autoFocus>Try Again</button>
                      <button className="feedback-btn secondary" onClick={handleNextQuestion}>Next Question</button>
                    </div>
                  )}
