@@ -90,31 +90,32 @@ function buildChord(scale: { name: string; accidental: string }[], rootDegree: n
 
   const notes = [];
   let currentOctave = baseOctave;
-  let lastIdx = -1;
+  let lastDiatonicIdx = -1;
 
   for (let i = 0; i < 3; i++) {
     const degreeIdx = degrees[i];
+    const note = scale[degreeIdx];
 
-    if (lastIdx !== -1 && degreeIdx < lastIdx) {
-      currentOctave++;
-    } else if (lastIdx !== -1 && i === 2 && inversion === 2) {
-       // Make sure the top note is actually higher in second inversion
-       if (degreeIdx < degrees[1]) currentOctave++;
+    const diatonicIdx = DIATONIC_NOTES.indexOf(note.name);
+
+    // In scientific pitch notation, the octave increments at C (index 0 in DIATONIC_NOTES)
+    // If we wrap around B (index 6) to C (index 0) or any higher note that crosses C, we increment
+    if (lastDiatonicIdx !== -1) {
+      // If the current note index is lower than the previous note index, we crossed C
+      if (diatonicIdx < lastDiatonicIdx) {
+        currentOctave++;
+      }
     }
 
-    const note = scale[degreeIdx];
     const keyStr = `${note.name.toLowerCase()}${note.accidental}/${currentOctave}`;
     notes.push(keyStr);
 
-    lastIdx = degreeIdx;
+    lastDiatonicIdx = diatonicIdx;
   }
 
-  const bassDegreeIdx = degrees[0]; // Bass is the lowest note of the chord
-  const bassNote = scale[bassDegreeIdx];
-  const bassKeyStr = `${bassNote.name.toLowerCase()}${bassNote.accidental}/${baseOctave - 1}`;
-
-  // Return exactly 2 notes: the bass note, and the highest note of the triad
-  return [bassKeyStr, notes[2]];
+  // Return exactly 2 notes: the lowest note and the highest note of the triad
+  // This ensures the interval between them is at most an octave (typically a 5th, 6th, etc.)
+  return [notes[0], notes[2]];
 }
 
 export function generateCadenceQuestion(clef: string): CadenceQuestion {

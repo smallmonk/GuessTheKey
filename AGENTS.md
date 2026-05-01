@@ -21,7 +21,9 @@
 - Added interval generation and multiple-choice handling alongside the existing key signature questions.
 - Added the "Time Signatures" question type with rhythm generation, UI integration, and dynamic rendering via VexFlow.
 - Added the "Ornaments" question type, mapping 6 ABRSM Grade 5 ornaments to their written-out executions, rendered with VexFlow beaming and rhythm adjustments.
+- Added the "Cadences" question type to test functional harmony (Perfect, Plagal, Imperfect) with exactly 2 notes per chord and sequential audio playback.
 - Updated VexFlow integration to explicitly load fonts (`VexFlow.setFonts('Bravura', 'Bravura')`) and wrap rendering logic in `document.fonts.ready` to ensure proper rendering without fallbacks.
+- Simplified Accidental rendering in VexFlow 5 using `Accidental.applyAccidentals([voice], vexKey)` instead of manual modifier loops.
 
 ## State & Data Flow
 - **Data Flow:** Unidirectional. State is maintained in `App.tsx` and passed down as props to `StaffDisplay` and `GameControls`. Action callbacks are passed to `GameControls` to update state in `App`.
