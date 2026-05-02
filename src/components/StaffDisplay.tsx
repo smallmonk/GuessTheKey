@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { Note } from '../utils/intervals';
 import { RhythmNote, TimeSignature } from '../utils/timeSignatures';
 import { OrnamentVoiceConfig } from '../utils/ornaments';
+import { CadenceNote } from '../utils/cadences';
 import { QuestionType } from '../App';
 
 interface StaffDisplayProps {
@@ -13,11 +14,12 @@ interface StaffDisplayProps {
   timeSignature?: TimeSignature;
   ornamentNotes?: RhythmNote[];
   ornamentVoiceConfig?: OrnamentVoiceConfig;
+  cadenceChords?: CadenceNote[];
   questionType?: QuestionType;
   animateKey: boolean;
 }
 
-export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatureNotes, timeSignature, ornamentNotes, ornamentVoiceConfig, questionType = 'keys', animateKey }: StaffDisplayProps) {
+export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatureNotes, timeSignature, ornamentNotes, ornamentVoiceConfig, cadenceChords, questionType = 'keys', animateKey }: StaffDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatur
 
           const isTimeSignature = questionType === 'timeSignatures';
           const isOrnament = questionType === 'ornaments';
+          const isCadence = questionType === 'cadences';
           const scale = 1.5;
 
           // For time signatures and ornaments, calculate dynamic width based on number of notes
@@ -53,11 +56,13 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatur
              numNotes = timeSignatureNotes.length;
           } else if (isOrnament && ornamentNotes) {
              numNotes = ornamentNotes.length;
+          } else if (isCadence && cadenceChords) {
+             numNotes = cadenceChords.length;
           }
 
           // Minimum width + space per note. We want a more compact style.
           let dynamicStaveWidth = 140;
-          if (isTimeSignature || isOrnament) {
+          if (isTimeSignature || isOrnament || isCadence) {
              // Increase space per note from 25 to 17.5 to prevent crowding
              // Increase base width from 60 to 80
              dynamicStaveWidth = Math.max(150, 80 + (numNotes * 17.5));
@@ -185,11 +190,38 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatur
             voice.draw(context, stave);
 
             beams.forEach(b => b.setContext(context).draw());
+          } else if (questionType === 'cadences' && cadenceChords && vexKey) {
+            stave.addKeySignature(vexKey);
+            stave.setContext(context).draw();
+
+            const { StaveNote, Accidental, Formatter, Voice } = VexFlowCore;
+
+            const staveNotes = cadenceChords.map(chord => {
+              return new StaveNote({
+                keys: chord.keys,
+                duration: chord.duration,
+                clef: clef
+              });
+            });
+
+            // Cadence typically 2 half notes = 4 beats
+            const voice = new Voice({
+              numBeats: 4,
+              beatValue: 4
+            });
+            voice.addTickables(staveNotes);
+
+            Accidental.applyAccidentals([voice], vexKey);
+
+            const formatter = new Formatter();
+            formatter.joinVoices([voice]).formatToStave([voice], stave);
+
+            voice.draw(context, stave);
           }
         });
     });
 
-  }, [clef, vexKey, intervalNotes, timeSignatureNotes, timeSignature, ornamentNotes, ornamentVoiceConfig, questionType]);
+  }, [clef, vexKey, intervalNotes, timeSignatureNotes, timeSignature, ornamentNotes, ornamentVoiceConfig, cadenceChords, questionType]);
 
   return (
     <div 

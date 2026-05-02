@@ -32,6 +32,12 @@ The application supports four distinct question types that users can toggle betw
 - **Generation:** Randomly selects an ornament type and dynamically generates its musical execution (including rhythm and beaming) using VexFlow.
 - **Supported Ornaments:** Includes Trill, Upper Mordent, Lower Mordent, Turn, Appoggiatura, and Acciaccatura.
 
+### 5. Cadences
+- **Goal:** Identify the cadence type (Perfect, Plagal, or Imperfect) based on a two-chord progression.
+- **Generation:** Randomly generates a key signature and two consecutive chords corresponding to standard functional harmony cadences (V-I, IV-I, I/IV-V).
+- **Constraints:** Ensures exactly 2 notes per chord (a 5th or 6th interval at most) across both Major and Minor (Harmonic) scales.
+- **Audio Feedback:** The app plays the generated cadence chords sequentially to train aural recognition.
+
 ## Musical Rendering
 - **VexFlow Integration:** Utilizes the VexFlow library to render high-quality, scalable SVG musical notation.
 - **Clef Support:** Randomly selects between Treble, Bass, Alto, and Tenor clefs (covering ABRSM Grade 5 requirements).

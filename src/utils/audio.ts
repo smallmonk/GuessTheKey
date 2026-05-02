@@ -1,9 +1,10 @@
 import { Note } from './intervals';
 import { KeySignature } from './keys';
 import { RhythmNote } from './timeSignatures';
+import { CadenceNote } from './cadences';
 
 const NOTE_OFFSETS: Record<string, number> = { 'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11 };
-const ACCIDENTAL_OFFSETS: Record<string, number> = { '': 0, '#': 1, 'b': -1, '##': 2, 'bb': -2 };
+const ACCIDENTAL_OFFSETS: Record<string, number> = { '': 0, '#': 1, 'b': -1, '##': 2, 'bb': -2, 'n': 0 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -154,5 +155,56 @@ export function playOrnament(notes: RhythmNote[]) {
     osc.stop(currentTime + duration);
 
     currentTime += duration;
+  });
+}
+
+export function playCadence(chords: CadenceNote[]) {
+  if (!AudioContextClass) return;
+  if (!audioCtx) {
+    audioCtx = new AudioContextClass();
+  }
+
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
+  let currentTime = audioCtx.currentTime;
+
+  chords.forEach((chord) => {
+    // Half note cadence duration reduced to 0.6 seconds
+    const duration = 0.6;
+
+    chord.keys.forEach(keyStr => {
+      const [notePart, octaveStr] = keyStr.split('/');
+      const noteName = notePart.charAt(0).toUpperCase();
+      const accidental = notePart.slice(1);
+      const octave = parseInt(octaveStr, 10);
+
+      const midi = 12 * (octave + 1) + NOTE_OFFSETS[noteName] + (ACCIDENTAL_OFFSETS[accidental] || 0);
+      const freq = 440 * Math.pow(2, (midi - 69) / 12);
+
+      const osc = audioCtx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+
+      const gainNode = audioCtx.createGain();
+
+      gainNode.gain.setValueAtTime(0, currentTime);
+      // Fade in
+      gainNode.gain.linearRampToValueAtTime(0.25, currentTime + 0.05);
+      // Sustain
+      gainNode.gain.setValueAtTime(0.25, currentTime + duration - 0.05);
+      // Fade out
+      gainNode.gain.linearRampToValueAtTime(0, currentTime + duration);
+
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      osc.start(currentTime);
+      osc.stop(currentTime + duration);
+    });
+
+    // Move time forward for the next chord, add a tiny gap
+    currentTime += duration + 0.05;
   });
 }

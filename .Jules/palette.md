@@ -1,4 +1,5 @@
-## 2024-05-01 - [Accessibility Improvements]
-**Learning:** React toggle buttons did not properly announce their active states to screen readers. Adding `aria-pressed` allows proper semantics. The global `outline: none` CSS on buttons completely broke keyboard focus visibility.
-**Action:** When creating new interactive elements, ensure proper ARIA roles and attributes are added to convey the element`s state, and ensure that `:focus-visible` styles are maintained for keyboard users.
-## 2026-04-30 - Manual Feedback Retry\nWhen replacing automatic timeouts with manual buttons in an interactive quiz flow, clear the feedback state (e.g., `setFeedback(null)`) prior to retrying or regenerating a question to ensure clean UI transitions without exposing answers.
+## 2024-05-24 - [Accessibility]
+**Learning:** The feedback overlay (correct/incorrect message) in the flashcard app is a critical interactive state that wasn't being announced to screen readers. Adding `role="alert"` and `aria-live="assertive"` fixes this. Also, the "Try Again" button requires `autoFocus` so keyboard users don't get stuck tabbing through the options again.
+**Action:** Always ensure dynamic, assertive feedback states have `role="alert"` and carefully manage keyboard focus (`autoFocus` or programmatic `.focus()`) to maintain user flow after mistakes.
+## 2026-05-02 - [Disabled States and Tooltips]
+When implementing disabled states for UI elements without adding new CSS classes, use inline styling overrides (e.g., `opacity: 0.5` and `cursor: 'not-allowed'`) alongside the HTML `disabled` attribute to ensure reliable visual feedback. For accessibility, use the native HTML `title` attribute to provide tooltips that explain hidden logic constraints, such as why a specific UI element (e.g., the final active clef) is disabled or cannot be toggled.

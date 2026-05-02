@@ -6,11 +6,12 @@ import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
 import { TimeSignature, TimeSignatureQuestion, generateTimeSignatureQuestion, getRandomTimeSignatures } from './utils/timeSignatures';
 import { Ornament, OrnamentQuestion, generateOrnamentQuestion, getRandomOrnaments } from './utils/ornaments';
-import { playInterval, playScale, playOrnament } from './utils/audio';
+import { Cadence, CadenceQuestion, generateCadenceQuestion, getCadenceOptions } from './utils/cadences';
+import { playInterval, playScale, playOrnament, playCadence } from './utils/audio';
 import { shuffle } from './utils/arrayUtils';
 import './App.css';
 
-export type QuestionType = 'keys' | 'intervals' | 'timeSignatures' | 'ornaments';
+export type QuestionType = 'keys' | 'intervals' | 'timeSignatures' | 'ornaments' | 'cadences';
 
 interface Question {
   type: QuestionType;
@@ -18,6 +19,7 @@ interface Question {
   interval?: IntervalQuestion;
   timeSignature?: TimeSignatureQuestion;
   ornament?: OrnamentQuestion;
+  cadence?: CadenceQuestion;
   clef: string;
 }
 
@@ -33,7 +35,7 @@ function App() {
   const [mode, setMode] = useState<Mode>('both'); // 'major', 'minor', 'both'
   const [questionType, setQuestionType] = useState<QuestionType>('keys');
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [options, setOptions] = useState<(KeySignature | Interval | TimeSignature | Ornament)[]>([]);
+  const [options, setOptions] = useState<(KeySignature | Interval | TimeSignature | Ornament | Cadence)[]>([]);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
@@ -79,6 +81,12 @@ function App() {
       newOptions.push(ornQ.ornament);
       const allOptions = shuffle(newOptions);
       setOptions(allOptions);
+    } else if (questionType === 'cadences') {
+      const cadQ = generateCadenceQuestion(randomClef);
+      setCurrentQuestion({ type: 'cadences', cadence: cadQ, key: cadQ.key, clef: randomClef });
+
+      const allOptions = getCadenceOptions();
+      setOptions(allOptions);
     }
     
     setAnimateKey(false);
@@ -87,7 +95,9 @@ function App() {
 
   // Re-generate question when type changes
   useEffect(() => {
-    generateQuestion();
+    // We defer the generation slightly to avoid synchronous setState warnings inside the effect
+    const timer = setTimeout(() => generateQuestion(), 0);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionType]);
 
@@ -101,7 +111,7 @@ function App() {
     });
   };
 
-  const handleSelect = (option: KeySignature | Interval | TimeSignature | Ornament) => {
+  const handleSelect = (option: KeySignature | Interval | TimeSignature | Ornament | Cadence) => {
     if (feedback) return;
     if (!currentQuestion) return;
 
@@ -115,6 +125,8 @@ function App() {
       isCorrect = option.name === currentQuestion.timeSignature.timeSignature.name;
     } else if (currentQuestion.type === 'ornaments' && currentQuestion.ornament) {
       isCorrect = option.name === currentQuestion.ornament.ornament.name;
+    } else if (currentQuestion.type === 'cadences' && currentQuestion.cadence) {
+      isCorrect = option.name === currentQuestion.cadence.cadence.name;
     }
 
     if (currentQuestion.type === 'intervals' && currentQuestion.interval && soundEnabled) {
@@ -123,11 +135,14 @@ function App() {
       playScale(currentQuestion.key);
     } else if (currentQuestion.type === 'ornaments' && currentQuestion.ornament && soundEnabled) {
       playOrnament(currentQuestion.ornament.notes);
+    } else if (currentQuestion.type === 'cadences' && currentQuestion.cadence && soundEnabled) {
+      playCadence(currentQuestion.cadence.chords);
     }
 
     const isKeys = currentQuestion.type === 'keys';
     const isOrnament = currentQuestion.type === 'ornaments';
-    const soundTime = soundEnabled ? (isKeys ? 2400 : (isOrnament ? 2000 : 1000)) : 1000;
+    const isCadence = currentQuestion.type === 'cadences';
+    const soundTime = soundEnabled ? (isKeys ? 2400 : (isOrnament ? 2000 : (isCadence ? 1300 : 1000))) : 1000;
 
     setTotalQuestions(t => t + 1);
 
@@ -180,6 +195,11 @@ function App() {
         
         <main className="main-content">
           <div className="flashcard">
+            {currentQuestion && currentQuestion.type === 'cadences' && currentQuestion.key && (
+              <div className="cadence-key-prompt">
+                Key: {currentQuestion.key.name}
+              </div>
+            )}
             {currentQuestion && (
               <div className="staff-wrapper">
                 <Suspense fallback={<div>Loading staff...</div>}>
@@ -191,6 +211,7 @@ function App() {
                     timeSignature={currentQuestion.timeSignature?.timeSignature}
                     ornamentNotes={currentQuestion.ornament?.notes}
                     ornamentVoiceConfig={currentQuestion.ornament?.ornament.voiceConfig}
+                    cadenceChords={currentQuestion.cadence?.chords}
                     questionType={currentQuestion.type}
                     animateKey={animateKey}
                   />
@@ -200,12 +221,16 @@ function App() {
             
             {/* Feedback Overlay inside flashcard */}
             {feedback && (
-              <div className={`feedback-overlay ${feedback.status}`}>
+              <div
+                className={`feedback-overlay ${feedback.status}`}
+                role="alert"
+                aria-live="assertive"
+              >
                  {feedback.status === 'correct' ? <CheckCircle2 size={64} /> : <XCircle size={64} />}
                  <h2>{feedback.message}</h2>
                  {feedback.status === 'incorrect' && (
                    <div className="feedback-actions">
-                     <button className="feedback-btn primary" onClick={handleTryAgain}>Try Again</button>
+                     <button className="feedback-btn primary" onClick={handleTryAgain} autoFocus>Try Again</button>
                      <button className="feedback-btn secondary" onClick={handleNextQuestion}>Next Question</button>
                    </div>
                  )}
@@ -225,6 +250,7 @@ function App() {
             setQuestionType={setQuestionType}
             soundEnabled={soundEnabled}
             setSoundEnabled={setSoundEnabled}
+            disabled={feedback !== null}
           />
         </main>
       </div>
