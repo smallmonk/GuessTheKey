@@ -180,13 +180,13 @@ function App() {
         
         <header className="header">
           <div className="title-group">
-            <Music className="icon bounce" size={32} />
+            <Music className="icon bounce" size={32} aria-hidden="true" />
             <h1>Guess the Key</h1>
           </div>
           <div className="stats-group">
             <div className="stat-badge score-badge">Score: {score}</div>
             <div className="stat-badge streak-badge">
-              <Trophy size={16} /> 
+              <Trophy size={16} aria-hidden="true" />
               Streak: {streak}
             </div>
             <div className="stat-badge total-badge">Total: {totalQuestions}</div>
@@ -226,7 +226,7 @@ function App() {
                 role="alert"
                 aria-live="assertive"
               >
-                 {feedback.status === 'correct' ? <CheckCircle2 size={64} /> : <XCircle size={64} />}
+                 {feedback.status === 'correct' ? <CheckCircle2 size={64} aria-hidden="true" /> : <XCircle size={64} aria-hidden="true" />}
                  <h2>{feedback.message}</h2>
                  {feedback.status === 'incorrect' && (
                    <div className="feedback-actions">
