@@ -1,4 +1,4 @@
-import { shuffle } from './arrayUtils';
+import { shuffle } from './arrayUtils.ts';
 
 export const KEYS = [
   // 0 accidentals
