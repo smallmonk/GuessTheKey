@@ -1,4 +1,4 @@
-import { shuffle } from './arrayUtils';
+import { shuffle } from './arrayUtils.ts';
 
 export interface Interval {
   name: string;
@@ -74,60 +74,65 @@ function getSemitoneDifference(baseNoteName: string, baseAccidental: string, bas
     return targetTotal - baseTotal;
 }
 
-function getAccidentalForTarget(targetNoteName: string, targetOctave: number, baseNoteName: string, baseAccidental: string, baseOctave: number, requiredSemitones: number): string {
+function getAccidentalForTarget(targetNoteName: string, targetOctave: number, baseNoteName: string, baseAccidental: string, baseOctave: number, requiredSemitones: number): string | null {
     const semitonesWithoutAccidental = getSemitoneDifference(baseNoteName, baseAccidental, baseOctave, targetNoteName, '', targetOctave);
     const accidentalDiff = requiredSemitones - semitonesWithoutAccidental;
 
-    return VAL_TO_ACCIDENTAL[accidentalDiff] ?? '';
+    return VAL_TO_ACCIDENTAL[accidentalDiff] ?? null;
 }
 
 export function generateInterval(clef: string): IntervalQuestion {
-  // Pick a base note based on clef to ensure it stays somewhat on staff
-  let baseOctave = 4;
-  if (clef === 'bass') baseOctave = 2;
-  else if (clef === 'alto') baseOctave = 3;
-  else if (clef === 'tenor') baseOctave = 3;
+  while (true) {
+    // Pick a base note based on clef to ensure it stays somewhat on staff
+    let baseOctave = 4;
+    if (clef === 'bass') baseOctave = 2;
+    else if (clef === 'alto') baseOctave = 3;
+    else if (clef === 'tenor') baseOctave = 3;
 
-  // Sometimes offset octave
-  baseOctave += Math.floor(Math.random() * 2);
+    // Sometimes offset octave
+    baseOctave += Math.floor(Math.random() * 2);
 
-  const baseNoteIdx = Math.floor(Math.random() * 7);
-  const baseNoteName = DIATONIC_NOTES[baseNoteIdx];
+    const baseNoteIdx = Math.floor(Math.random() * 7);
+    const baseNoteName = DIATONIC_NOTES[baseNoteIdx];
 
-  // Keep base notes simple (mostly naturals, some simple sharps/flats)
-  const accidentals = ['', '', '', '#', 'b'];
-  const baseAccidental = accidentals[Math.floor(Math.random() * accidentals.length)];
+    // Keep base notes simple (mostly naturals, some simple sharps/flats)
+    const accidentals = ['', '', '', '#', 'b'];
+    const baseAccidental = accidentals[Math.floor(Math.random() * accidentals.length)];
 
-  const note1: Note = {
-    name: baseNoteName,
-    accidental: baseAccidental,
-    octave: baseOctave
-  };
+    const note1: Note = {
+      name: baseNoteName,
+      accidental: baseAccidental,
+      octave: baseOctave
+    };
 
-  const interval = INTERVALS[Math.floor(Math.random() * INTERVALS.length)];
+    const interval = INTERVALS[Math.floor(Math.random() * INTERVALS.length)];
 
-  // Calculate target note name based on diatonic steps
-  const targetNoteIdx = (baseNoteIdx + interval.diatonicSteps) % 7;
-  const targetNoteName = DIATONIC_NOTES[targetNoteIdx];
+    // Calculate target note name based on diatonic steps
+    const targetNoteIdx = (baseNoteIdx + interval.diatonicSteps) % 7;
+    const targetNoteName = DIATONIC_NOTES[targetNoteIdx];
 
-  // Calculate target octave
-  const octaveCrossings = Math.floor((baseNoteIdx + interval.diatonicSteps) / 7);
-  const targetOctave = baseOctave + octaveCrossings;
+    // Calculate target octave
+    const octaveCrossings = Math.floor((baseNoteIdx + interval.diatonicSteps) / 7);
+    const targetOctave = baseOctave + octaveCrossings;
 
-  // Calculate target accidental to match the required semitone distance
-  const targetAccidental = getAccidentalForTarget(targetNoteName, targetOctave, baseNoteName, baseAccidental, baseOctave, interval.semitones);
+    // Calculate target accidental to match the required semitone distance
+    const targetAccidental = getAccidentalForTarget(targetNoteName, targetOctave, baseNoteName, baseAccidental, baseOctave, interval.semitones);
 
-  const note2: Note = {
-    name: targetNoteName,
-    accidental: targetAccidental,
-    octave: targetOctave
-  };
+    // If we couldn't find a valid accidental (e.g., requires triple flat), retry
+    if (targetAccidental === null) continue;
 
-  return {
-    notes: [note1, note2],
-    interval,
-    clef
-  };
+    const note2: Note = {
+      name: targetNoteName,
+      accidental: targetAccidental,
+      octave: targetOctave
+    };
+
+    return {
+      notes: [note1, note2],
+      interval,
+      clef
+    };
+  }
 }
 
 export function getRandomIntervals(n: number, current: Interval): Interval[] {
