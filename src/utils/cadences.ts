@@ -57,8 +57,6 @@ function getKeyAccidentals(key: KeySignature): Record<string, string> {
 function getScale(key: KeySignature): { name: string; accidental: string }[] {
   const [rootNoteStr] = key.name.split(' ');
   const rootNoteName = rootNoteStr.charAt(0);
-  // rootAccidental is implied by the key signature but not strictly needed
-  // for building the scale since we use keyAccidentals
 
   const keyAccidentals = getKeyAccidentals(key);
 
