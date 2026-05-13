@@ -43,6 +43,9 @@ export const KEYS = [
   { name: 'Eb Minor', vexKey: 'Ebm', accidentals: 6, type: 'flat', mode: 'minor' },
 ];
 
+export const MAJOR_KEYS = KEYS.filter(k => k.mode === 'major');
+export const MINOR_KEYS = KEYS.filter(k => k.mode === 'minor');
+
 export const CLEFS = [
   { id: 'treble', label: 'Treble Clef' },
   { id: 'bass', label: 'Bass Clef' },

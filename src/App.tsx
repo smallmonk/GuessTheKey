@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { Music, CheckCircle2, XCircle, Trophy } from 'lucide-react';
 import GameControls from './components/GameControls';
 const StaffDisplay = lazy(() => import('./components/StaffDisplay'));
-import { KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
+import { KEYS, MAJOR_KEYS, MINOR_KEYS, CLEFS, getRandomItems, KeySignature } from './utils/keys';
 import { Interval, IntervalQuestion, generateInterval, getRandomIntervals } from './utils/intervals';
 import { TimeSignature, TimeSignatureQuestion, generateTimeSignatureQuestion, getRandomTimeSignatures } from './utils/timeSignatures';
 import { Ornament, OrnamentQuestion, generateOrnamentQuestion, getRandomOrnaments } from './utils/ornaments';
@@ -49,8 +49,8 @@ function App() {
 
     if (questionType === 'keys') {
       let validKeys = KEYS;
-      if (mode === 'major') validKeys = KEYS.filter(k => k.mode === 'major');
-      if (mode === 'minor') validKeys = KEYS.filter(k => k.mode === 'minor');
+      if (mode === 'major') validKeys = MAJOR_KEYS;
+      if (mode === 'minor') validKeys = MINOR_KEYS;
       if (validKeys.length === 0) return;
 
       const randomKey = validKeys[Math.floor(Math.random() * validKeys.length)];
