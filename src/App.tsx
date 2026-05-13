@@ -174,6 +174,14 @@ function App() {
     generateQuestion();
   };
 
+  const titleMap: Record<QuestionType, string> = {
+    keys: 'Guess the Key',
+    intervals: 'Guess the Interval',
+    timeSignatures: 'Guess the Time Signature',
+    ornaments: 'Guess the Ornament',
+    cadences: 'Guess the Cadence',
+  };
+
   return (
     <div className="app-wrapper">
       <div className="app-container">
@@ -181,7 +189,7 @@ function App() {
         <header className="header">
           <div className="title-group">
             <Music className="icon bounce" size={32} aria-hidden="true" />
-            <h1>Guess the Key</h1>
+            <h1>{titleMap[questionType]}</h1>
           </div>
           <div className="stats-group">
             <div className="stat-badge score-badge">Score: {score}</div>

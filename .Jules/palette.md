@@ -6,3 +6,6 @@ When implementing disabled states for UI elements without adding new CSS classes
 ## 2024-05-24 - [Accessibility]
 **Learning:** Purely decorative icons (like those adjacent to textual labels) are often announced redundantly or unhelpfully by screen readers.
 **Action:** Always add `aria-hidden="true"` to UI icons whose meaning is already conveyed by adjacent text, reducing cognitive load for visually impaired users.
+## 2026-05-12 - Dynamic Main Heading Context
+**Learning:** Updating a single static page heading based on the active state/route is a critical UX pattern. In an SPA, users can lose context when switching between different exercises if the main heading doesn't change.
+**Action:** Always ensure the primary heading (`<h1>`) reflects the current context or task to improve spatial orientation and screen reader experience.
