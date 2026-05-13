@@ -26,7 +26,7 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatur
     if (!containerRef.current) return;
 
     // Clear previous drawing
-    containerRef.current.innerHTML = '';
+    containerRef.current.replaceChildren();
 
     // Dynamically import vexflow core to avoid the warning since the main module brings in everything
     Promise.all([
@@ -40,7 +40,7 @@ export default function StaffDisplay({ clef, vexKey, intervalNotes, timeSignatur
         document.fonts.ready.then(() => {
           if (!containerRef.current) return;
           // Clear previous drawing just in case it wasn't clear
-          containerRef.current.innerHTML = '';
+          containerRef.current.replaceChildren();
 
           // Create an SVG renderer and attach it to the DIV element.
           const renderer = new Renderer(containerRef.current, Renderer.Backends.SVG);
