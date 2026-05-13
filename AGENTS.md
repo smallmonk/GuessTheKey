@@ -29,7 +29,7 @@
 - **Data Flow:** Unidirectional. State is maintained in `App.tsx` and passed down as props to `StaffDisplay` and `GameControls`. Action callbacks are passed to `GameControls` to update state in `App`.
 - **Side Effects (`useEffect`):**
   - **`App.tsx`:** Triggers `generateQuestion` when `questionType` changes.
-  - **`StaffDisplay.tsx`:** Manages DOM manipulation (`containerRef.current.innerHTML = ''`) and asynchronous VexFlow rendering/font loading whenever staff props (`clef`, `vexKey`, `intervalNotes`, etc.) change.
+  - **`StaffDisplay.tsx`:** Manages DOM manipulation (`containerRef.current.replaceChildren()`) and asynchronous VexFlow rendering/font loading whenever staff props (`clef`, `vexKey`, `intervalNotes`, etc.) change.
 
 ## Pending Tasks
 1. Expand automated test scripts and unit/integration tests (initial unit tests for `timeSignatures.ts` implemented).
