@@ -174,6 +174,18 @@ function App() {
     generateQuestion();
   };
 
+  // Update document title dynamically based on the current context
+  useEffect(() => {
+    const titleMap: Record<QuestionType, string> = {
+      keys: 'Guess the Key',
+      intervals: 'Guess the Interval',
+      timeSignatures: 'Guess the Time Signature',
+      ornaments: 'Guess the Ornament',
+      cadences: 'Guess the Cadence',
+    };
+    document.title = `${titleMap[questionType]} | Music Theory Practice`;
+  }, [questionType]);
+
   const titleMap: Record<QuestionType, string> = {
     keys: 'Guess the Key',
     intervals: 'Guess the Interval',
