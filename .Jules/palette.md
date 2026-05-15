@@ -9,3 +9,6 @@ When implementing disabled states for UI elements without adding new CSS classes
 ## 2026-05-12 - Dynamic Main Heading Context
 **Learning:** Updating a single static page heading based on the active state/route is a critical UX pattern. In an SPA, users can lose context when switching between different exercises if the main heading doesn't change.
 **Action:** Always ensure the primary heading (`<h1>`) reflects the current context or task to improve spatial orientation and screen reader experience.
+## 2024-05-24 - [Accessibility] Dynamic Document Titles
+**Learning:** In a Single Page Application (SPA), the page content changes without a full page reload, meaning the `<title>` tag doesn't automatically update. This leaves screen reader users without crucial context about their current state, and makes browser tabs indistinguishable.
+**Action:** Always dynamically update `document.title` to reflect the active route, task, or context (e.g., `document.title = \`\${currentContext} | App Name\``) to improve spatial orientation and tab navigation.
