@@ -1,4 +1,4 @@
-import { shuffle } from './arrayUtils';
+import { shuffle } from './arrayUtils.ts';
 
 export const KEYS = [
   // 0 accidentals
@@ -42,6 +42,9 @@ export const KEYS = [
   { name: 'Gb Major', vexKey: 'Gb', accidentals: 6, type: 'flat', mode: 'major' },
   { name: 'Eb Minor', vexKey: 'Ebm', accidentals: 6, type: 'flat', mode: 'minor' },
 ];
+
+export const MAJOR_KEYS = KEYS.filter(k => k.mode === 'major');
+export const MINOR_KEYS = KEYS.filter(k => k.mode === 'minor');
 
 export const CLEFS = [
   { id: 'treble', label: 'Treble Clef' },

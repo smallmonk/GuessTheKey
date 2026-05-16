@@ -29,7 +29,7 @@
 - **Data Flow:** Unidirectional. State is maintained in `App.tsx` and passed down as props to `StaffDisplay` and `GameControls`. Action callbacks are passed to `GameControls` to update state in `App`.
 - **Side Effects (`useEffect`):**
   - **`App.tsx`:** Triggers `generateQuestion` when `questionType` changes.
-  - **`StaffDisplay.tsx`:** Manages DOM manipulation (`containerRef.current.innerHTML = ''`) and asynchronous VexFlow rendering/font loading whenever staff props (`clef`, `vexKey`, `intervalNotes`, etc.) change.
+  - **`StaffDisplay.tsx`:** Manages DOM manipulation (`containerRef.current.replaceChildren()`) and asynchronous VexFlow rendering/font loading whenever staff props (`clef`, `vexKey`, `intervalNotes`, etc.) change.
 
 ## Pending Tasks
 1. Expand automated test scripts and unit/integration tests (initial unit tests for `timeSignatures.ts` implemented).
@@ -46,3 +46,4 @@
 ## Coding Agent Instructions
 - **Ignore Compiled Packages:** When inspecting or modifying the codebase, the coding agent must ignore compiled directories and package artifacts such as `node_modules/` and `dist/`. Always operate on the source files located in `src/` and other configuration files in the root.
 - **Do Not Commit Media Artifacts:** Never commit screenshots (e.g., .png, .jpg) or video recordings (e.g., .webm, .mp4) of the app to the repository. Always remove these temporary files before submitting your changes. However, you *should* still capture and share these media artifacts in the chat when performing frontend verification.
+- **Accessibility & Navigation:** Avoid performing changes on keyboard shortcuts and screen reader attributes.
